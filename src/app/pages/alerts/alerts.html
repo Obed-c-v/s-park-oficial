@@ -1,0 +1,73 @@
+<div class="alerts-container">
+    <header class="alerts-header">
+        <div class="header-content">
+            <h1>Alertas Clínicas</h1>
+            <p>Monitoreo proactivo de biomarcadores vocales y progresión de síntomas en pacientes.</p>
+        </div>
+        <div class="header-stats">
+            <div class="stat-mini">
+                <span class="stat-label">Total hoy</span>
+                <span class="stat-val">12</span>
+            </div>
+            <div class="stat-mini critical">
+                <span class="stat-label">Críticas</span>
+                <span class="stat-val">3</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="filters-bar">
+        <div class="filter-group">
+            <label>Nivel de Alerta</label>
+            <div class="filter-chips">
+                @for (level of filterLevels; track level) {
+                <button class="chip" [class.active]="selectedLevel === level" (click)="setFilter(level)">
+                    {{level}}
+                </button>
+                }
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>Periodo</label>
+            <select class="filter-select">
+                <option>Últimas 24 horas</option>
+                <option>Últimos 7 días</option>
+                <option>Mes actual</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="alerts-list" [@staggerAnimation]="filteredAlerts.length">
+        @for (alert of filteredAlerts; track alert.id) {
+        <div class="alert-card" [class]="alert.levelClass">
+            <div class="alert-side-indicator"></div>
+            <div class="alert-body">
+                <div class="alert-top">
+                    <div class="patient-info">
+                        <span class="patient-id">{{alert.id}}</span>
+                        <h3 class="patient-name">{{alert.name}}</h3>
+                    </div>
+                    <div class="alert-meta">
+                        <span class="alert-date">{{alert.date}} | {{alert.time}}</span>
+                        <span class="alert-level-badge" [class]="alert.levelClass">{{alert.level}}</span>
+                    </div>
+                </div>
+
+                <div class="alert-content">
+                    <div class="clinical-reason">
+                        <strong>Motivo Clínico:</strong>
+                        <p>{{alert.reason}}</p>
+                    </div>
+                </div>
+
+                <div class="alert-actions">
+                    <span class="status-indicator">
+                        <span class="dot"></span> {{alert.status}}
+                    </span>
+                    <button class="btn-primary" [routerLink]="['/patients/detail', alert.id]">Ver Expediente</button>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>

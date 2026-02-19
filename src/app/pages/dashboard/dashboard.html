@@ -1,0 +1,120 @@
+<div class="content-scroll" @fadeInSlide>
+    <!-- Summary Cards -->
+    <section class="summary-grid" @staggerAnimation>
+        <div class="summary-card">
+            <div class="card-label">{{ settingsService.translate('total_patients') }}</div>
+            <div class="card-value">124</div>
+            <div class="card-footer text-success">+3 este mes</div>
+        </div>
+        <div class="summary-card highlight-danger">
+            <div class="card-label">{{ settingsService.translate('high_risk') }}</div>
+            <div class="card-value">12</div>
+            <div class="card-footer text-danger">Requiere atención</div>
+        </div>
+        <div class="summary-card">
+            <div class="card-label">{{ settingsService.translate('tests_performed') }}</div>
+            <div class="card-value">542</div>
+            <div class="card-footer text-muted">Total histórico</div>
+        </div>
+        <div class="summary-card">
+            <div class="card-label">{{ settingsService.translate('last_test') }}</div>
+            <div class="card-value">Hace 2h</div>
+        </div>
+    </section>
+
+    <div class="main-grid" @staggerAnimation>
+        <!-- Recent Activity Table -->
+        <section class="activity-section">
+            <div class="section-header">
+                <h3>{{ settingsService.translate('recent_activity') }}</h3>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Fecha</th>
+                            <th>ID Prueba</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="patient-info">
+                                    <span class="p-name">García, Manuel</span>
+                                </div>
+                            </td>
+                            <td>Oct 29, 2026</td>
+                            <td>#VOX-782</td>
+                            <td><span class="badge badge-low">Bajo Riesgo</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="patient-info">
+                                    <span class="p-name">López, Elena</span>
+                                </div>
+                            </td>
+                            <td>Oct 29, 2026</td>
+                            <td>#VOX-781</td>
+                            <td><span class="badge badge-high">Riesgo Alto</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="patient-info">
+                                    <span class="p-name">Martínez, Juan</span>
+                                </div>
+                            </td>
+                            <td>Oct 28, 2026</td>
+                            <td>#VOX-779</td>
+                            <td><span class="badge badge-medium">Riesgo Medio</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="patient-info">
+                                    <span class="p-name">Sánchez, Clara</span>
+                                </div>
+                            </td>
+                            <td>Oct 28, 2026</td>
+                            <td>#VOX-778</td>
+                            <td><span class="badge badge-low">Bajo Riesgo</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Sidebar Widgets (Alerts) -->
+        <section class="alerts-section">
+            <div class="section-header">
+                <h3>{{ settingsService.translate('clinical_alerts') }}</h3>
+            </div>
+            <div class="alerts-list">
+                <div class="alert-item">
+                    <div class="alert-indicator high"></div>
+                    <div class="alert-content">
+                        <div class="alert-title"> Incremento de Temblor</div>
+                        <p>Paciente: <strong>López, Elena (#4552)</strong></p>
+                        <button class="btn-secondary-sm" routerLink="/alerts">Ver Paciente</button>
+                    </div>
+                </div>
+                <div class="alert-item">
+                    <div class="alert-indicator medium"></div>
+                    <div class="alert-content">
+                        <div class="alert-title">Prueba pendiente revisión</div>
+                        <p>Paciente: <strong>Martínez, Juan (#3321)</strong></p>
+                        <button class="btn-secondary-sm" routerLink="/alerts">Ver Paciente</button>
+                    </div>
+                </div>
+                <div class="alert-item">
+                    <div class="alert-indicator low"></div>
+                    <div class="alert-content">
+                        <div class="alert-title">Control de seguimiento</div>
+                        <p>Paciente: <strong>Pérez, Roberto (#8892)</strong></p>
+                        <button class="btn-secondary-sm" routerLink="/alerts">Ver Paciente</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
