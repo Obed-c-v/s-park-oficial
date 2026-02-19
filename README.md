@@ -1,4 +1,9 @@
-# SPark
+# S_park
+equipo 10 (Medical Dashboard)
+
+---
+
+# SPark (Angular Project)
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.5.
 
