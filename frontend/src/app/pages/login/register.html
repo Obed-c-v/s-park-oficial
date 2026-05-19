@@ -1,0 +1,67 @@
+<div class="login-container">
+    <div class="login-card registration-card" @fadeInSlide>
+        <header class="login-header">
+            <div class="logo">
+                <img src="assets/images/t.jpg" alt="S-park Logo" class="login-logo">
+                <h1 class="brand">S-park</h1>
+            </div>
+            <p class="description">Registro de nuevo profesional médico</p>
+        </header>
+
+        <form class="login-form" [formGroup]="registerForm" (ngSubmit)="onRegister()">
+            @if (errorMessage) {
+            <div class="error-alert">
+                <span>{{ errorMessage }}</span>
+            </div>
+            }
+            @if (successMessage) {
+            <div class="success-alert" style="background: #e8f5e9; color: #2e7d32; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <span>{{ successMessage }}</span>
+            </div>
+            }
+
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" formControlName="nombre" placeholder="Nombre">
+                </div>
+                <div class="form-group">
+                    <label>Apellido</label>
+                    <input type="text" formControlName="apellido" placeholder="Apellido">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Correo electrónico</label>
+                <input type="email" formControlName="email" placeholder="ejemplo@medicina.com">
+            </div>
+
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" formControlName="password" placeholder="••••••••">
+            </div>
+
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Especialidad</label>
+                    <input type="text" formControlName="especialidad" placeholder="Ej. Neurología">
+                </div>
+                <div class="form-group">
+                    <label>Nº Licencia</label>
+                    <input type="text" formControlName="numero_licencia" placeholder="ML-XXXXX">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Teléfono (Opcional)</label>
+                <input type="tel" formControlName="telefono" placeholder="+52 ...">
+            </div>
+
+            <button type="submit" class="btn-primary" [disabled]="registerForm.invalid">Registrarse</button>
+
+            <div class="form-footer">
+                <a routerLink="/login" class="forgot-password">¿Ya tiene cuenta? Inicie sesión</a>
+            </div>
+        </form>
+    </div>
+</div>
