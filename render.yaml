@@ -30,9 +30,8 @@ services:
         generateValue: true
 
   # 3. Web Admin Panel
-  - type: web
+  - type: static
     name: spark-admin-panel
-    env: static
     buildCommand: npm install && npm run build
     publishPath: www
     rootDir: frontend
