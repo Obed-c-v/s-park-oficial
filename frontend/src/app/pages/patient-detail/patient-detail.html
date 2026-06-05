@@ -113,6 +113,108 @@
 
         <!-- Main Content -->
         <div class="main-content">
+            <!-- AI Diagnosis Premium Dashboard Section -->
+            <section class="card ai-diagnosis-premium-card">
+                <div class="card-header-ai">
+                    <div class="header-ai-title">
+                        <span class="ai-spark-icon">⚡</span>
+                        <h3>Diagnóstico de Inteligencia Artificial (Ensemble de 4 Modelos)</h3>
+                    </div>
+                    <span class="ai-badge-status">Procesamiento E2E Activo</span>
+                </div>
+
+                <div class="ai-dashboard-layout" *ngIf="patientData().probability > 0 || patientData().interpretation; else noAiData">
+                    <!-- Velocímetro de Probabilidad y Semáforo Clínico -->
+                    <div class="ai-left-column">
+                        <div class="ai-speedometer-container">
+                            <svg class="speedometer-svg" viewBox="0 0 100 50">
+                                <path class="speedometer-track" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#eef2f6" stroke-width="8" stroke-linecap="round"></path>
+                                <path class="speedometer-fill" [attr.stroke-dashoffset]="125.6 * (1 - patientData().probability / 100)" stroke-dasharray="125.6" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" [attr.stroke]="getSpeedometerColor(patientData().probability)" stroke-width="8" stroke-linecap="round"></path>
+                            </svg>
+                            <div class="speedometer-overlay">
+                                <span class="speedometer-value">{{patientData().probability | number:'1.1-1'}}%</span>
+                                <span class="speedometer-lbl">Probabilidad</span>
+                            </div>
+                        </div>
+
+                        <!-- Semáforo Clínico -->
+                        <div class="clinical-traffic-light" [class]="patientData().riskClass">
+                            <span class="light-pulse"></span>
+                            <div class="light-text">
+                                <span class="risk-title-lbl">Riesgo Clínico: {{patientData().riskLevel}}</span>
+                                <span class="risk-sub-lbl">Estimación de severidad UPDRS</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Consenso de 4 Modelos de Machine Learning & Interpretación -->
+                    <div class="ai-right-column">
+                        <div class="models-consenus-box" *ngIf="patientData().modelComparisons">
+                            <h4 class="ai-sub-title">Consenso de Modelos de ML</h4>
+                            <div class="models-grid-bars">
+                                <!-- Random Forest -->
+                                <div class="model-bar-row">
+                                    <div class="model-meta">
+                                        <span class="model-name">Random Forest</span>
+                                        <span class="model-val">{{patientData().modelComparisons['Random Forest'] | number:'1.1-1'}}%</span>
+                                    </div>
+                                    <div class="model-progress-track">
+                                        <div class="model-progress-fill rf" [style.width.%]="patientData().modelComparisons['Random Forest']"></div>
+                                    </div>
+                                </div>
+                                <!-- SVM -->
+                                <div class="model-bar-row">
+                                    <div class="model-meta">
+                                        <span class="model-name">SVM (Support Vector Machine)</span>
+                                        <span class="model-val">{{patientData().modelComparisons['SVM'] | number:'1.1-1'}}%</span>
+                                    </div>
+                                    <div class="model-progress-track">
+                                        <div class="model-progress-fill svm" [style.width.%]="patientData().modelComparisons['SVM']"></div>
+                                    </div>
+                                </div>
+                                <!-- Gradient Boosting -->
+                                <div class="model-bar-row">
+                                    <div class="model-meta">
+                                        <span class="model-name">Gradient Boosting</span>
+                                        <span class="model-val">{{patientData().modelComparisons['Gradient Boosting'] | number:'1.1-1'}}%</span>
+                                    </div>
+                                    <div class="model-progress-track">
+                                        <div class="model-progress-fill gb" [style.width.%]="patientData().modelComparisons['Gradient Boosting']"></div>
+                                    </div>
+                                </div>
+                                <!-- XGBoost -->
+                                <div class="model-bar-row">
+                                    <div class="model-meta">
+                                        <span class="model-name">XGBoost (eXtreme Gradient Boosting)</span>
+                                        <span class="model-val">{{patientData().modelComparisons['XGBoost'] | number:'1.1-1'}}%</span>
+                                    </div>
+                                    <div class="model-progress-track">
+                                        <div class="model-progress-fill xgb" [style.width.%]="patientData().modelComparisons['XGBoost']"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interpretación clínica en burbuja -->
+                        <div class="ai-interpretation-box">
+                            <h4 class="ai-sub-title">Interpretación Diagnóstica</h4>
+                            <div class="interpretation-bubble">
+                                <span class="ai-bubble-icon">🧠</span>
+                                <p class="interpretation-bubble-text">{{patientData().interpretation}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <ng-template #noAiData>
+                    <div class="empty-state-ai">
+                        <div class="empty-ai-icon">🎙️</div>
+                        <h3>Sin Análisis Acústicos de IA</h3>
+                        <p>Este paciente no registra pruebas vocales analizadas en la base de datos. Pide al paciente iniciar sesión y realizar la calibración por voz desde su aplicación móvil.</p>
+                    </div>
+                </ng-template>
+            </section>
+
             <!-- Evolution Chart Section -->
             <section class="card evolution-card">
                 <div class="card-header">
@@ -181,4 +283,3 @@
         </div>
     }
 </div>
-/div>

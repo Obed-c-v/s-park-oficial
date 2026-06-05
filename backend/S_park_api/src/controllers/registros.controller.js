@@ -50,9 +50,34 @@ const getDashboardStats = async (req, res, next) => {
   }
 };
 
+const createRegistroVoz = async (req, res, next) => {
+  try {
+    const { paciente_id, audio } = req.body;
+    if (!paciente_id || !audio) {
+      return res.status(400).json({ message: 'paciente_id and audio (base64) are required' });
+    }
+
+    const result = await registrosService.createRegistroVoz(paciente_id, audio);
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const probarModelos = async (req, res, next) => {
+  try {
+    const result = await registrosService.probarModelos(req.body);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createRegistro,
   getRegistrosByPaciente,
   getAlertas,
-  getDashboardStats
+  getDashboardStats,
+  createRegistroVoz,
+  probarModelos
 };

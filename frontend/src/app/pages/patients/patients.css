@@ -425,6 +425,29 @@ td {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
+/* === Instant Validation States === */
+.form-group.error input,
+.form-group.error select,
+.form-group.error textarea {
+    border-color: #dc2626;
+    background-color: #fff8f8;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+}
+
+.error-message {
+    font-size: 12px;
+    font-weight: 500;
+    color: #dc2626;
+    margin-top: -4px;
+    display: block;
+    animation: fadeDownMsg 0.18s ease;
+}
+
+@keyframes fadeDownMsg {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
 .form-group.full-width {
     grid-column: span 2;
 }

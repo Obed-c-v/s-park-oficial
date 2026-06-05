@@ -40,7 +40,6 @@ export class Patients implements OnInit {
     phone: ['', [SecurityValidators.phone()]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
     initialDiagnosis: ['', [Validators.maxLength(500), SecurityValidators.noHtml()]],
-    password: ['123456', [Validators.required, Validators.minLength(6)]], // Default password for new patients
     medico_id: [null]
   });
 
@@ -115,7 +114,7 @@ export class Patients implements OnInit {
   openModal() {
     this.isEditing = false;
     this.editingId = null;
-    this.patientForm.reset({ gender: 'Masculino', password: '123456' });
+    this.patientForm.reset({ gender: 'Masculino' });
     this.showModal = true;
   }
 
@@ -131,11 +130,9 @@ export class Patients implements OnInit {
       email: patient.email,
       initialDiagnosis: patient.diagnostico_inicial || ''
     });
-    // Remove email and password requirements during edit since fields are hidden
+    // Remove email requirement during edit since fields are hidden
     this.patientForm.get('email')?.clearValidators();
     this.patientForm.get('email')?.updateValueAndValidity();
-    this.patientForm.get('password')?.clearValidators();
-    this.patientForm.get('password')?.updateValueAndValidity();
     
     this.showModal = true;
   }
@@ -159,12 +156,10 @@ export class Patients implements OnInit {
     this.formSubmitted = false;
     this.isEditing = false;
     this.editingId = null;
-    this.patientForm.reset({ gender: 'Masculino', password: '123456' });
+    this.patientForm.reset({ gender: 'Masculino' });
     // Restore validators
     this.patientForm.get('email')?.setValidators([Validators.required, Validators.email]);
     this.patientForm.get('email')?.updateValueAndValidity();
-    this.patientForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
-    this.patientForm.get('password')?.updateValueAndValidity();
   }
 
   savePatient() {
@@ -188,7 +183,6 @@ export class Patients implements OnInit {
     const form = this.patientForm.value;
     const body = {
       email: form.email,
-      password: form.password,
       nombre: form.firstName,
       apellido: form.lastName,
       fecha_nacimiento: new Date(new Date().getFullYear() - form.age, 0, 1).toISOString().split('T')[0], // Rough estimate

@@ -1,0 +1,164 @@
+=============================================================================
+             GUÍA DE ESTUDIO Y PREPARACIÓN DE EXPOSICIÓN: IA S-PARK
+=============================================================================
+
+Esta guía reúne las preguntas clave y explicaciones técnicas de los modelos de
+Inteligencia Artificial de S-Park para ayudarte a presentar y defender el proyecto.
+
+-----------------------------------------------------------------------------
+1. ¿POR QUÉ ALGUNOS MODELOS DAN DECIMALES CONTINUOS Y OTROS MÁS ENTEROS?
+-----------------------------------------------------------------------------
+Cada modelo matemático tiene una forma diferente de calcular la probabilidad:
+
+* Random Forest (Resultados discretos / más enteros):
+  Construye un número fijo de árboles independientes (por ejemplo, 100). Cada
+  árbol vota sí (1) o no (0). La probabilidad es la fracción de votos: si 46 de
+  los 100 árboles votan Parkinson, el resultado es exactamente 46.00%.
+
+* Gradient Boosting e XGBoost (Resultados decimales continuos):
+  Construyen árboles secuenciales donde cada uno corrige los errores del anterior
+  mediante gradientes. La suma de las salidas genera un valor continuo que se
+  transforma a porcentaje usando la función logística sigmoide:
+    Probabilidad = 1 / (1 + e^-x)
+  Al ser una fórmula matemática continua, siempre da decimales (ej. 21.27%).
+
+* SVM - Máquina de Vectores de Soporte (Resultados decimales continuos):
+  Nativamente calcula la distancia de los datos a una línea divisoria (hiperplano).
+  Para darnos una probabilidad, utiliza la "Calibración de Platt", que ajusta
+  una regresión logística (curva matemática continua) sobre las distancias,
+  dando decimales precisos (ej. 0.88%).
+
+-----------------------------------------------------------------------------
+2. PROBABILIDAD DE PARKINSON vs. ESCALA DE SEVERIDAD UPDRS (¡MUY IMPORTANTE!)
+-----------------------------------------------------------------------------
+Son dos modelos independientes entrenados con datasets y variables distintas:
+
+* Modelo de Detección (Binario - Dataset de Oxford):
+  - Mide la PROBABILIDAD de tener Parkinson (de 0% a 100%).
+  - Si el promedio de los 4 modelos (Ensemble) es menor al 30%, el paciente 
+    se considera Sano/Estable.
+  
+* Modelo de Severidad (Multiclase - Dataset de Telemonitoring UPDRS):
+  - Estima el nivel de síntomas motores del paciente en PUNTOS CLINICOS (escala 
+    UPDRS, que va de 0 a 55 puntos en el dataset). No mide probabilidad.
+  - Los rangos de riesgo se definen por puntos de severidad, NO por porcentaje:
+    🟢 RIESGO BAJO (Leve): score UPDRS <= 25 puntos.
+    🟡 RIESGO MEDIO (Moderado): score UPDRS entre 26 y 40 puntos.
+    🔴 RIESGO ALTO (Severo): score UPDRS > 40 puntos.
+
+-----------------------------------------------------------------------------
+3. ¿QUÉ SIGNIFICA EL PORCENTAJE QUE ARROJA CADA MODELO EN LAS PRUEBAS?
+-----------------------------------------------------------------------------
+El porcentaje indica la probabilidad de que la voz pertenezca a un paciente con
+Parkinson. Para un caso de "Voz Sana", el resultado ideal es cercano al 0%:
+
+* Gradient Boosting (0.49%) -> Seguridad del 99.51% de que está SANO.
+* SVM (0.88%)               -> Seguridad del 99.12% de que está SANO.
+* XGBoost (21.27%)          -> Seguridad del 78.73% de que está SANO.
+* Random Forest (46.00%)    -> 54% de sus árboles dicen Sano, 46% dicen Parkinson.
+                               (El modelo está indeciso, pero se inclina a Sano).
+
+* Diagnóstico Final (Ensemble - Promedio):
+  (0.49% + 0.88% + 21.27% + 46.00%) / 4 = 17.16% de probabilidad de Parkinson.
+  Al estar muy por debajo de la alerta (30%), el sistema determina "SANO/ESTABLE".
+
+-----------------------------------------------------------------------------
+4. ¿CADA PRUEBA EN EL ENDPOINT ENTRENA AUTOMÁTICAMENTE EL MODELO?
+-----------------------------------------------------------------------------
+* RESPUESTA CORTA: No de forma automática en tiempo real, pero SÍ de forma manual.
+
+* ¿CÓMO FUNCIONA?:
+  Los modelos cargados (.joblib) son estructuras estáticas y fijas. Mandar una
+  petición de prueba con la etiqueta 'es_parkinson' no altera los coeficientes
+  del modelo de inmediato.
+
+* EL FLUJO DE RE-ENTRENAMIENTO (MLOps):
+  1. Captura de Datos: Al hacer pruebas en Swagger con 'es_parkinson', los datos 
+     se guardan en 'ml/outputs/pruebas_historial.csv'.
+  2. Acumulación: Se juntan nuevos ejemplos reales y artificiales validados.
+  3. Re-entrenamiento: El desarrollador ejecuta los scripts (ej. train_rf.py, 
+     train_svm.py) que leen el dataset original + pruebas_historial.csv.
+  4. Actualización: Se guardan nuevos archivos '.joblib' optimizados con los 
+     nuevos patrones aprendidos.
+  
+  Esto hace al sistema escalable y adaptable, permitiendo mejorar la confiabilidad
+  conforme recopilas más muestras de pacientes reales en el futuro.
+
+-----------------------------------------------------------------------------
+5. DIFERENCIA CLÍNICA CLAVE: PARKINSON vs. TARTAMUDEZ (FALSOS POSITIVOS)
+-----------------------------------------------------------------------------
+* ¿CÓMO SE DIFERENCIAN?:
+  Es fundamental que la IA distinga entre un trastorno del habla como la 
+  tartamudez (problema de fluidez) y el Parkinson (temblor motor de origen neurológico).
+
+* ¿POR QUÉ EL MODELO DE VOZ NO SE CONFUNDE?:
+  - La prueba consiste en SOSTENER LA VOCAL "/A/" de forma continua por 5 segundos.
+  - Tartamudez: Al sostener una vocal estable sin articular palabras ni frases, el 
+    mecanismo físico de las cuerdas vocales opera de forma normal. Su Jitter (estabilidad 
+    de pitch) y Shimmer (estabilidad de volumen) serán NORMALES (valores bajos) y 
+    su HNR será ALTO. Por ende, la IA lo clasificará correctamente como "SANO".
+  - Parkinson: Causa hipocinesia y temblor muscular laringeo involuntario de origen 
+    neurológico central. Incluso sosteniendo una vocal, las cuerdas vocales sufrirán
+    micro-temblores incontrolables. Esto produce un Jitter y Shimmer muy elevados, y
+    ruido vocal (bajo HNR).
+
+  Esta diferencia laringea es la que permite que nuestro modelo evite falsos positivos 
+  con tartamudos o personas con acentos marcados.
+
+-----------------------------------------------------------------------------
+6. ANÁLISIS DE AUDIO MÓVIL Y EXTRACCIÓN DE BIOMARCADORES (DSP)
+-----------------------------------------------------------------------------
+* ¿QUÉ LIBRERÍAS DE PYTHON UTILIZAMOS PARA ESTO?
+  - librosa (y soundfile / audioread): Se utiliza en el backend para decodificar
+    y leer la estructura del archivo de audio enviado en Base64. Al utilizar librosa 
+    (que se apoya en audioread y las APIs de Windows Media Foundation/CoreAudio), 
+    el sistema es capaz de abrir de forma nativa múltiples formatos comprimidos como 
+    AAC, M4A, MP3 y WAV. Esto permite procesar grabaciones hechas directamente en 
+    dispositivos móviles reales.
+  - NumPy: Utilizada para realizar todo el procesamiento matemático y cálculo de
+    vectores en memoria a gran velocidad (como autocorrelación, promedios, etc.).
+
+* ¿CÓMO TRABAJA A NIVEL MATEMÁTICO LA EXTRACCIÓN DE BIOMARCADORES?
+  El audio no se analiza de golpe, sino que se divide en pequeñas ventanas 
+  temporales superpuestas (generalmente de 30ms con solapamiento del 50%) para 
+  analizar la señal en tiempo casi continuo:
+
+  1. F0 (Frecuencia Fundamental o Pitch):
+     Mide el tono de la voz (qué tan aguda o grave es). Se calcula usando la 
+     "Autocorrelación" matemática de la señal. Consiste en comparar la onda con 
+     sí misma pero retrasada en el tiempo (lags). Cuando la similitud (correlación) 
+     es máxima dentro de los límites del habla humana (75Hz - 300Hz), esa distancia 
+     de retraso representa el periodo fundamental (T). La frecuencia fundamental es:
+       F0 = Frecuencia de muestreo / retraso óptimo (lag)
+
+  2. Jitter (Variabilidad de Frecuencia / Inestabilidad del Tono):
+     Mide qué tanto fluctúa el tono (pitch) de ciclo a ciclo. Un Jitter elevado 
+     indica temblor o inestabilidad vocal. A nivel matemático, se calcula como el 
+     promedio de la diferencia absoluta entre periodos consecutivos, normalizado 
+     por el periodo promedio:
+       Jitter = ( Suma(|T_i - T_i+1|) / (N - 1) ) / Promedio(T)
+
+  3. Shimmer (Variabilidad de Amplitud / Inestabilidad del Volumen):
+     Mide las micro-fluctuaciones en la amplitud (volumen) de la voz de ciclo a 
+     ciclo. En Parkinson, el control de la fuerza de aire es deficiente, elevando 
+     este valor. Matemáticamente se calcula como la diferencia promedio de 
+     amplitudes máximas entre ciclos consecutivos, dividido por la amplitud promedio:
+       Shimmer = ( Suma(|A_i - A_i+1|) / (N - 1) ) / Promedio(A)
+
+  4. HNR (Relación Armónico-Ruido / Harmonics-to-Noise Ratio):
+     Mide la proporción de sonido periódico y limpio (armónicos) respecto al 
+     ruido soplado o ronco de la voz (ruido). En pacientes con Parkinson, la 
+     falta de cierre de cuerdas vocales genera escape de aire (más ruido). 
+     Se calcula en decibelios (dB) con la correlación máxima encontrada:
+       HNR = 10 * log10( r_max / (1 - r_max) )
+
+* ¿CÓMO RECONOCE EL MODELO QUÉ PARTE DEL AUDIO ANALIZAR?
+  - El usuario debe sostener la vocal "/A/" de forma estable por 5 segundos.
+  - El algoritmo limpia el ruido inicial de fondo descartando ventanas silenciosas 
+    (amplitudes menores a un umbral de energía, ej. < 0.01).
+  - De esta manera, solo las secciones del audio donde hay actividad fonatoria 
+    real (ondas periódicas claras detectadas por autocorrelación) son procesadas 
+    para calcular los biomarcadores, ignorando el silencio inicial/final o ruidos 
+    de golpeteo al pulsar grabar.
+=============================================================================
+

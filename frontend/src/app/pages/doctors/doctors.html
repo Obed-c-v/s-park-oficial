@@ -128,38 +128,54 @@
             <div class="modal-body">
                 <form class="patient-form" [formGroup]="doctorForm">
                     <div class="form-row">
-                        <div class="form-group" [class.error]="doctorForm.get('nombre')?.invalid && doctorForm.get('nombre')?.touched">
+                        <div class="form-group" [class.error]="doctorForm.get('nombre')?.invalid && (doctorForm.get('nombre')?.dirty || doctorForm.get('nombre')?.touched)">
                             <label>{{ settingsService.translate('first_name') }} *</label>
                             <input type="text" formControlName="nombre" placeholder="Ej. Roberto">
-                            @if (doctorForm.get('nombre')?.invalid && doctorForm.get('nombre')?.touched) {
+                            @if (doctorForm.get('nombre')?.invalid && (doctorForm.get('nombre')?.dirty || doctorForm.get('nombre')?.touched)) {
                                 <span class="error-message">
                                     @if (doctorForm.get('nombre')?.errors?.['required']) { {{ settingsService.translate('field_required') }} }
                                     @else if (doctorForm.get('nombre')?.errors?.['hasHtml']) { {{ settingsService.translate('html_not_allowed') }} }
                                     @else if (doctorForm.get('nombre')?.errors?.['hasNumbers']) { {{ settingsService.translate('no_numbers_allowed') }} }
+                                    @else if (doctorForm.get('nombre')?.errors?.['maxlength']) { Máximo 50 caracteres }
                                 </span>
                             }
                         </div>
-                        <div class="form-group" [class.error]="doctorForm.get('apellido')?.invalid && doctorForm.get('apellido')?.touched">
+                        <div class="form-group" [class.error]="doctorForm.get('apellido')?.invalid && (doctorForm.get('apellido')?.dirty || doctorForm.get('apellido')?.touched)">
                             <label>{{ settingsService.translate('last_name') }} *</label>
                             <input type="text" formControlName="apellido" placeholder="Ej. García">
-                            @if (doctorForm.get('apellido')?.invalid && doctorForm.get('apellido')?.touched) {
+                            @if (doctorForm.get('apellido')?.invalid && (doctorForm.get('apellido')?.dirty || doctorForm.get('apellido')?.touched)) {
                                 <span class="error-message">
                                     @if (doctorForm.get('apellido')?.errors?.['required']) { {{ settingsService.translate('field_required') }} }
                                     @else if (doctorForm.get('apellido')?.errors?.['hasHtml']) { {{ settingsService.translate('html_not_allowed') }} }
                                     @else if (doctorForm.get('apellido')?.errors?.['hasNumbers']) { {{ settingsService.translate('no_numbers_allowed') }} }
+                                    @else if (doctorForm.get('apellido')?.errors?.['maxlength']) { Máximo 50 caracteres }
                                 </span>
                             }
                         </div>
                     </div>
 
                     <div class="form-row" *ngIf="!isEditing">
-                        <div class="form-group" [class.error]="doctorForm.get('email')?.invalid && doctorForm.get('email')?.touched">
+                        <div class="form-group" [class.error]="doctorForm.get('email')?.invalid && (doctorForm.get('email')?.dirty || doctorForm.get('email')?.touched)">
                             <label>{{ settingsService.translate('email') }} *</label>
                             <input type="email" formControlName="email" placeholder="doctor@clinica.com">
+                            @if (doctorForm.get('email')?.invalid && (doctorForm.get('email')?.dirty || doctorForm.get('email')?.touched)) {
+                                <span class="error-message">
+                                    @if (doctorForm.get('email')?.errors?.['required']) { {{ settingsService.translate('email_required') || 'El correo es obligatorio' }} }
+                                    @else if (doctorForm.get('email')?.errors?.['email']) { {{ settingsService.translate('invalid_email_format') || 'Formato de correo inválido' }} }
+                                    @else if (doctorForm.get('email')?.errors?.['maxlength']) { Máximo 100 caracteres }
+                                </span>
+                            }
                         </div>
-                        <div class="form-group" [class.error]="doctorForm.get('password')?.invalid && doctorForm.get('password')?.touched">
+                        <div class="form-group" [class.error]="doctorForm.get('password')?.invalid && (doctorForm.get('password')?.dirty || doctorForm.get('password')?.touched)">
                             <label>{{ settingsService.translate('password') }} *</label>
-                            <input type="password" formControlName="password" placeholder="••••••••">
+                            <input type="password" formControlName="password" placeholder="Mínimo 6 caracteres">
+                            @if (doctorForm.get('password')?.invalid && (doctorForm.get('password')?.dirty || doctorForm.get('password')?.touched)) {
+                                <span class="error-message">
+                                    @if (doctorForm.get('password')?.errors?.['required']) { {{ settingsService.translate('password_required') || 'La contraseña es obligatoria' }} }
+                                    @else if (doctorForm.get('password')?.errors?.['minlength']) { {{ settingsService.translate('password_too_short') || 'Mínimo 6 caracteres' }} }
+                                    @else if (doctorForm.get('password')?.errors?.['maxlength']) { Máximo 50 caracteres }
+                                </span>
+                            }
                         </div>
                     </div>
 
@@ -172,10 +188,10 @@
                                 }
                             </select>
                         </div>
-                        <div class="form-group" [class.error]="doctorForm.get('numero_licencia')?.invalid && doctorForm.get('numero_licencia')?.touched">
+                        <div class="form-group" [class.error]="doctorForm.get('numero_licencia')?.invalid && (doctorForm.get('numero_licencia')?.dirty || doctorForm.get('numero_licencia')?.touched)">
                             <label>{{ settingsService.translate('license_number') }} *</label>
                             <input type="text" formControlName="numero_licencia" placeholder="12345678">
-                            @if (doctorForm.get('numero_licencia')?.invalid && doctorForm.get('numero_licencia')?.touched) {
+                            @if (doctorForm.get('numero_licencia')?.invalid && (doctorForm.get('numero_licencia')?.dirty || doctorForm.get('numero_licencia')?.touched)) {
                                 <span class="error-message">
                                     @if (doctorForm.get('numero_licencia')?.errors?.['required']) { {{ settingsService.translate('field_required') }} }
                                     @else if (doctorForm.get('numero_licencia')?.errors?.['hasHtml']) { {{ settingsService.translate('html_not_allowed') }} }
@@ -185,10 +201,10 @@
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group" [class.error]="doctorForm.get('telefono')?.invalid && doctorForm.get('telefono')?.touched">
+                        <div class="form-group" [class.error]="doctorForm.get('telefono')?.invalid && (doctorForm.get('telefono')?.dirty || doctorForm.get('telefono')?.touched)">
                             <label>{{ settingsService.translate('phone') }}</label>
                             <input type="tel" formControlName="telefono" placeholder="Ej. 5512345678">
-                            @if (doctorForm.get('telefono')?.invalid && doctorForm.get('telefono')?.touched) {
+                            @if (doctorForm.get('telefono')?.invalid && (doctorForm.get('telefono')?.dirty || doctorForm.get('telefono')?.touched)) {
                                 <span class="error-message">{{ settingsService.translate('invalid_phone_format') }}</span>
                             }
                         </div>

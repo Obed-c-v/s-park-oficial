@@ -2,14 +2,8 @@ const citasService = require('../services/citas.service');
 
 const createCita = async (req, res, next) => {
   try {
-    const { paciente_id, fecha_hora, estado } = req.body;
-    const { medico_id, rol } = req.user;
-
-    if (!medico_id && rol !== 'ADMIN') {
-      return res.status(403).json({ message: 'Only doctors can create appointments' });
-    }
-
-    const result = await citasService.createCita(paciente_id, medico_id, fecha_hora, estado);
+    const { user_id: userId, medico_id, rol } = req.user;
+    const result = await citasService.createCitaForUser(userId, rol, medico_id, req.body);
     res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -18,10 +12,8 @@ const createCita = async (req, res, next) => {
 
 const getCitasByMedico = async (req, res, next) => {
   try {
-    const { medico_id, rol } = req.user;
-    if (!medico_id && rol !== 'ADMIN') return res.status(403).json({ message: 'Unauthorized' });
-
-    const result = await citasService.getCitasByMedico(medico_id);
+    const { user_id: userId, medico_id, rol } = req.user;
+    const result = await citasService.getCitasForUser(userId, rol, medico_id);
     res.json(result);
   } catch (error) {
     next(error);

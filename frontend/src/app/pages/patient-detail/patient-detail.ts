@@ -36,13 +36,49 @@ export class PatientDetail implements OnInit {
   fetchData() {
     if (this.patientId) {
       this.apiService.get<any>(`/pacientes/${this.patientId}/detalle`).subscribe(data => {
-        // Transform backend data to frontend structure
-        const lastBiomarkers = data.registros_biomarcador?.[0];
-        const riskLevel = lastBiomarkers?.resultado_ia?.riesgo || 'Bajo';
+        // Encontrar el último registro que contenga resultado_ia válido
+        const voiceTests = data.registros_biomarcador || [];
+        const lastWithIA = voiceTests.find((r: any) => r.resultado_ia);
         
+        const riskLevel = lastWithIA?.resultado_ia?.riesgo || 'NORMAL';
+        const probability = lastWithIA?.resultado_ia?.probabilidad || 0.0;
+        const modelComparisons = lastWithIA?.resultado_ia?.comparacion_modelos || null;
+        const interpretation = lastWithIA?.resultado_ia?.interpretacion || '';
+
+        // Agrupar registros de biomarcador de la misma sesión (diferencia < 2 seg)
+        const groups: { [key: string]: any } = {};
+        
+        voiceTests.forEach((r: any) => {
+          const timestamp = new Date(r.fecha_registro).getTime();
+          const matchedKey = Object.keys(groups).find(k => Math.abs(Number(k) - timestamp) < 2000);
+          const key = matchedKey || timestamp.toString();
+
+          if (!groups[key]) {
+            groups[key] = {
+              date: new Date(r.fecha_registro).toLocaleString(),
+              result: r.resultado_ia?.riesgo || 'Estable',
+              jitter: '-',
+              shimmer: '-',
+              hnr: '-'
+            };
+          }
+
+          if (r.nombre === 'Jitter') {
+            groups[key].jitter = `${parseFloat(r.valor).toFixed(3)}%`;
+          } else if (r.nombre === 'Shimmer') {
+            groups[key].shimmer = `${parseFloat(r.valor).toFixed(3)}%`;
+          } else if (r.nombre === 'HNR') {
+            groups[key].hnr = `${parseFloat(r.valor).toFixed(2)} dB`;
+          }
+        });
+
+        const historyList = Object.values(groups).sort((a: any, b: any) => {
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        });
+
         this.patientData.set({
           id: data.paciente.id,
-          expedienteId: data.expediente.id, // ✅ guardar el expediente_id real
+          expedienteId: data.expediente.id,
           name: `${data.paciente.nombre} ${data.paciente.apellido}`,
           age: this.calculateAge(data.paciente.fecha_nacimiento),
           gender: data.paciente.sexo === 'M' ? 'Masculino' : 'Femenino',
@@ -50,15 +86,11 @@ export class PatientDetail implements OnInit {
           currentStage: 'N/A',
           riskLevel: riskLevel,
           riskClass: this.getRiskClass(riskLevel),
-          interpretation: lastBiomarkers?.resultado_ia?.interpretacion || '',
+          probability: probability,
+          modelComparisons: modelComparisons,
+          interpretation: interpretation,
           notes: data.notas_clinicas || [],
-          history: data.registros_biomarcador.map((r: any) => ({
-             date: new Date(r.fecha_registro).toLocaleDateString(),
-             result: r.resultado_ia?.riesgo || 'Estable',
-             jitter: r.nombre === 'Jitter' ? `${r.valor}%` : '-',
-             shimmer: r.nombre === 'Shimmer' ? `${r.valor}%` : '-',
-             hnr: r.nombre === 'HNR' ? `${r.valor} dB` : '-'
-          }))
+          history: historyList
         });
       });
     }
@@ -77,6 +109,12 @@ export class PatientDetail implements OnInit {
     if (l === 'alto' || l === 'alta') return 'high';
     if (l === 'medio') return 'medium';
     return 'low';
+  }
+
+  getSpeedometerColor(prob: number) {
+    if (prob < 30) return '#2dd36f';
+    if (prob < 70) return '#ff9f0a';
+    return '#eb445a';
   }
 
   get initialDiagnosis() {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { fadeInSlide } from '../../shared/animations';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -21,11 +21,12 @@ export class Login {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
   settingsService = inject(SettingsService);
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
-    password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(50)]]
+    password: ['', [Validators.required, Validators.maxLength(50)]]
   });
 
   errorMessage = '';
@@ -40,8 +41,19 @@ export class Login {
 
     const { email, password } = this.loginForm.value;
 
-    this.apiService.post<any>('/auth/login', { email, password }).subscribe({
+    console.log('Sending login request for email:', email);
+
+    this.apiService.post<any>('/auth/login', { email, password, source: 'web' }).subscribe({
       next: (res) => {
+        console.log('Login request succeeded. Response:', res);
+        // Extra safety: block patients on the client side too
+        if (res.user?.rol === 'PACIENTE') {
+          console.warn('Patient role detected on web panel login. Blocking access.');
+          this.errorMessage = 'Credenciales incorrectas';
+          this.cdr.detectChanges();
+          return;
+        }
+
         localStorage.setItem('token', res.token);
         localStorage.setItem('user', JSON.stringify(res.user));
         // Refresh auth service so role signal is populated before navigation
@@ -49,7 +61,10 @@ export class Login {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || this.settingsService.translate('invalid_login');
+        console.error('Login request failed. Error details:', err);
+        this.errorMessage = 'Credenciales incorrectas';
+        console.log('errorMessage has been set to:', this.errorMessage);
+        this.cdr.detectChanges();
       }
     });
   }

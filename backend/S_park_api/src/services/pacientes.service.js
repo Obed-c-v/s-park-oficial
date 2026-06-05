@@ -1,5 +1,7 @@
 const { pool, query } = require('../config/db');
 const { hashPassword } = require('../utils/hash');
+const { generateOTP, generateTempPassword } = require('../utils/otp');
+const { sendActivationEmail } = require('../utils/mailer');
 
 /**
  * Create a new patient with user account and initial expediente.
@@ -10,11 +12,20 @@ const createPaciente = async (pacienteData, medicoResponsableId) => {
   try {
     await client.query('BEGIN');
 
-    // 1. Create User
-    const hashedPassword = await hashPassword(pacienteData.password);
+    // 1. Create User with temporary password and OTP
+    const tempPassword = generateTempPassword();
+    const hashedPassword = await hashPassword(tempPassword);
+    
+    const otp = generateOTP();
+
     const userResult = await client.query(
-      'INSERT INTO usuarios (email, password_hash) VALUES ($1, $2) RETURNING id',
-      [pacienteData.email, hashedPassword]
+      `INSERT INTO usuarios (
+        email, password_hash, email_verificado, 
+        codigo_activacion, codigo_expiracion, primer_acceso
+       ) 
+       VALUES ($1, $2, FALSE, $3, NOW() + INTERVAL '15 minutes', TRUE) 
+       RETURNING id`,
+      [pacienteData.email, hashedPassword, otp]
     );
     const userId = userResult.rows[0].id;
 
@@ -49,6 +60,19 @@ const createPaciente = async (pacienteData, medicoResponsableId) => {
     }
 
     await client.query('COMMIT');
+
+    // Send activation email after successful commit
+    if (pacienteData.email) {
+      // Intentionally not awaiting here or wrapping in try-catch so failure to send email 
+      // doesn't rollback the whole transaction if commit succeeded, 
+      // but await is fine if we want to log failures inline.
+      sendActivationEmail(pacienteData.email, {
+        nombre: pacienteData.nombre,
+        tempPassword,
+        otp
+      }).catch(console.error);
+    }
+
     return { id: patientId, email: pacienteData.email };
   } catch (error) {
     await client.query('ROLLBACK');

@@ -4,7 +4,7 @@ const { pool, query } = require('../config/db');
  * Get all doctors with optional filters.
  */
 const getMedicos = async (nombre, especialidad) => {
-  let q = 'SELECT id, nombre, apellido, especialidad, numero_licencia, activo FROM medicos WHERE 1=1';
+  let q = 'SELECT id, nombre, apellido, especialidad, numero_licencia, activo, foto_url FROM medicos WHERE 1=1';
   const params = [];
 
   if (nombre) {

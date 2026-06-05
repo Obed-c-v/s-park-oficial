@@ -129,10 +129,10 @@
             <div class="modal-body">
                 <form class="patient-form" [formGroup]="patientForm">
                     <div class="form-row">
-                        <div class="form-group" [class.error]="patientForm.get('firstName')?.invalid && patientForm.get('firstName')?.touched">
+                        <div class="form-group" [class.error]="patientForm.get('firstName')?.invalid && (patientForm.get('firstName')?.dirty || patientForm.get('firstName')?.touched)">
                             <label>{{ settingsService.translate('first_name') }} *</label>
                             <input type="text" formControlName="firstName" placeholder="Ej. Roberto">
-                            @if (patientForm.get('firstName')?.invalid && patientForm.get('firstName')?.touched) {
+                            @if (patientForm.get('firstName')?.invalid && (patientForm.get('firstName')?.dirty || patientForm.get('firstName')?.touched)) {
                                 <span class="error-message">
                                     @if (patientForm.get('firstName')?.errors?.['required']) { {{ settingsService.translate('field_required') }} }
                                     @else if (patientForm.get('firstName')?.errors?.['hasHtml']) { {{ settingsService.translate('html_not_allowed') }} }
@@ -140,10 +140,10 @@
                                 </span>
                             }
                         </div>
-                        <div class="form-group" [class.error]="patientForm.get('lastName')?.invalid && patientForm.get('lastName')?.touched">
+                        <div class="form-group" [class.error]="patientForm.get('lastName')?.invalid && (patientForm.get('lastName')?.dirty || patientForm.get('lastName')?.touched)">
                             <label>{{ settingsService.translate('last_name') }} *</label>
                             <input type="text" formControlName="lastName" placeholder="Ej. García">
-                            @if (patientForm.get('lastName')?.invalid && patientForm.get('lastName')?.touched) {
+                            @if (patientForm.get('lastName')?.invalid && (patientForm.get('lastName')?.dirty || patientForm.get('lastName')?.touched)) {
                                 <span class="error-message">
                                     @if (patientForm.get('lastName')?.errors?.['required']) { {{ settingsService.translate('field_required') }} }
                                     @else if (patientForm.get('lastName')?.errors?.['hasHtml']) { {{ settingsService.translate('html_not_allowed') }} }
@@ -154,10 +154,10 @@
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group" [class.error]="patientForm.get('age')?.invalid && patientForm.get('age')?.touched">
+                        <div class="form-group" [class.error]="patientForm.get('age')?.invalid && (patientForm.get('age')?.dirty || patientForm.get('age')?.touched)">
                             <label>{{ settingsService.translate('age') }}</label>
                             <input type="number" formControlName="age" placeholder="68">
-                            @if (patientForm.get('age')?.invalid && patientForm.get('age')?.touched) {
+                            @if (patientForm.get('age')?.invalid && (patientForm.get('age')?.dirty || patientForm.get('age')?.touched)) {
                                 <span class="error-message">
                                     @if (patientForm.get('age')?.errors?.['onlyNumbers']) { {{ settingsService.translate('only_numbers_allowed') }} }
                                     @else { {{ settingsService.translate('invalid_age') || 'Edad inválida' }} }
@@ -175,34 +175,29 @@
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group" [class.error]="patientForm.get('phone')?.invalid && patientForm.get('phone')?.touched">
+                        <div class="form-group" [class.error]="patientForm.get('phone')?.invalid && (patientForm.get('phone')?.dirty || patientForm.get('phone')?.touched)">
                             <label>{{ settingsService.translate('phone') }}</label>
                             <input type="tel" formControlName="phone" placeholder="Ej. 5512345678">
-                            @if (patientForm.get('phone')?.invalid && patientForm.get('phone')?.touched) {
+                            @if (patientForm.get('phone')?.invalid && (patientForm.get('phone')?.dirty || patientForm.get('phone')?.touched)) {
                                 <span class="error-message">{{ settingsService.translate('invalid_phone_format') }}</span>
                             }
                         </div>
-                        <div class="form-group" [class.error]="patientForm.get('email')?.invalid && patientForm.get('email')?.touched">
+                        <div class="form-group" [class.error]="patientForm.get('email')?.invalid && (patientForm.get('email')?.dirty || patientForm.get('email')?.touched)">
                             <label>{{ settingsService.translate('email') }} *</label>
                             <input type="email" formControlName="email" placeholder="ejemplo@email.com">
-                            @if (patientForm.get('email')?.invalid && patientForm.get('email')?.touched) {
-                                <span class="error-message">{{ settingsService.translate('invalid_email_format') }}</span>
+                            @if (patientForm.get('email')?.invalid && (patientForm.get('email')?.dirty || patientForm.get('email')?.touched)) {
+                                <span class="error-message">
+                                    @if (patientForm.get('email')?.errors?.['required']) { {{ settingsService.translate('email_required') || 'El correo es obligatorio' }} }
+                                    @else { {{ settingsService.translate('invalid_email_format') }} }
+                                </span>
                             }
                         </div>
                     </div>
 
-                    @if (!isEditing) {
-                        <div class="form-group full-width" [class.error]="patientForm.get('password')?.invalid && patientForm.get('password')?.touched">
-                            <label>{{ settingsService.translate('password') }} *</label>
-                            <input type="password" formControlName="password" autocomplete="new-password">
-                            @if (patientForm.get('password')?.invalid && patientForm.get('password')?.touched) {
-                                <span class="error-message">Mínimo 6 caracteres</span>
-                            }
-                        </div>
-                    }
+
 
                     @if (authService.isAdmin()) {
-                        <div class="form-group full-width" [class.error]="patientForm.get('medico_id')?.invalid && patientForm.get('medico_id')?.touched">
+                        <div class="form-group full-width" [class.error]="patientForm.get('medico_id')?.invalid && (patientForm.get('medico_id')?.dirty || patientForm.get('medico_id')?.touched)">
                             <label>Médico Asignado *</label>
                             <select formControlName="medico_id">
                                 <option [ngValue]="null">Selecciona un médico principal</option>
@@ -210,16 +205,16 @@
                                     <option [value]="medico.id">{{ medico.nombre }} {{ medico.apellido }} - {{ medico.especialidad }}</option>
                                 }
                             </select>
-                            @if (patientForm.get('medico_id')?.invalid && patientForm.get('medico_id')?.touched) {
+                            @if (patientForm.get('medico_id')?.invalid && (patientForm.get('medico_id')?.dirty || patientForm.get('medico_id')?.touched)) {
                                 <span class="error-message">El paciente debe tener un médico asignado</span>
                             }
                         </div>
                     }
 
-                    <div class="form-group full-width" [class.error]="patientForm.get('initialDiagnosis')?.invalid && patientForm.get('initialDiagnosis')?.touched">
+                    <div class="form-group full-width" [class.error]="patientForm.get('initialDiagnosis')?.invalid && (patientForm.get('initialDiagnosis')?.dirty || patientForm.get('initialDiagnosis')?.touched)">
                         <label>{{ settingsService.translate('initial_diagnosis') }}</label>
                         <textarea formControlName="initialDiagnosis" rows="3" placeholder="..."></textarea>
-                        @if (patientForm.get('initialDiagnosis')?.invalid && patientForm.get('initialDiagnosis')?.touched) {
+                        @if (patientForm.get('initialDiagnosis')?.invalid && (patientForm.get('initialDiagnosis')?.dirty || patientForm.get('initialDiagnosis')?.touched)) {
                             <span class="error-message">
                                 @if (patientForm.get('initialDiagnosis')?.errors?.['hasHtml']) { {{ settingsService.translate('html_not_allowed') }} }
                                 @else { Max 500 caracteres }
