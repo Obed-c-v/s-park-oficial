@@ -34,7 +34,7 @@ services:
     name: spark-admin-panel
     env: static
     buildCommand: npm install && npm run build
-    publishDir: www
+    publishPath: www
     rootDir: frontend
     plan: free
 
