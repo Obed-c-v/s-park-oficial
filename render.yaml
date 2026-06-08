@@ -30,13 +30,11 @@ services:
         generateValue: true
 
   # 3. Web Admin Panel
-  - type: web
+  - type: static
     name: spark-admin-panel
-    env: static
     buildCommand: npm install && npm run build
     staticPublishPath: www
     rootDir: frontend
-    plan: free
 
 databases:
   # 4. PostgreSQL Database
