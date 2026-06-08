@@ -36,6 +36,9 @@ services:
     buildCommand: npm install --legacy-peer-deps && npm run build
     staticPublishPath: dist/S-park
     rootDir: frontend
+    envVars:
+      - key: SKIP_INSTALL_DEPS
+        value: "true"
 
 databases:
   # 4. PostgreSQL Database
