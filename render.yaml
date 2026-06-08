@@ -30,11 +30,12 @@ services:
         generateValue: true
 
   # 3. Web Admin Panel (Sitio Estático)
+# 3. Web Admin Panel (Sitio Estático)
   - type: web
     name: spark-admin-panel
     env: static
     buildCommand: npm install --legacy-peer-deps && npm run build
-    staticPublishPath: dist/S-park
+    staticPublishPath: dist/S-park/browser
     rootDir: frontend
     envVars:
       - key: SKIP_INSTALL_DEPS
