@@ -29,15 +29,13 @@ services:
       - key: JWT_SECRET
         generateValue: true
 
-  # 3. Web Admin Panel (Sitio Estático)
+# 3. Web Admin Panel (Sitio Estático)
   - type: web
     name: spark-admin-panel
     env: static
-    installCommand: npm install --legacy-peer-deps  # <-- ¡AQUÍ LO OBLIGAMOS DESDE EL BLUEPRINT!
-    buildCommand: npm run build
+    buildCommand: npm install --legacy-peer-deps && npm run build 
     staticPublishPath: dist/S-park
     rootDir: frontend
-
 databases:
   # 4. PostgreSQL Database
   - name: spark-db
