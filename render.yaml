@@ -29,12 +29,12 @@ services:
       - key: JWT_SECRET
         generateValue: true
 
-  # 3. Web Admin Panel (Sitio Estático)
+# 3. Web Admin Panel (Sitio Estático)
   - type: web
     name: spark-admin-panel
     env: static
-    buildCommand: npm install && npm run build
-    staticPublishPath: www
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    staticPublishPath: dist/S-park
     rootDir: frontend
 
 databases:
