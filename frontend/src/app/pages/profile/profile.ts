@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { SecurityValidators } from '../../shared/validators/security.validators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 interface Notification { message: string; type: 'success' | 'error'; }
 
@@ -58,7 +59,7 @@ export class Profile implements OnInit {
             foto_url: d.foto_url
           });
         }
-        this.avatarUrl.set(d?.foto_url ? `http://localhost:3000${d.foto_url}` : null);
+        this.avatarUrl.set(d?.foto_url ? `${environment.serverUrl}${d.foto_url}` : null);
         this.profileForm.patchValue({
           nombre: d?.nombre || '',
           apellido: d?.apellido || '',
@@ -140,9 +141,9 @@ export class Profile implements OnInit {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
-    this.http.post<any>('http://localhost:3000/api/auth/me/foto', formData, { headers }).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/auth/me/foto`, formData, { headers }).subscribe({
       next: (res) => {
-        this.avatarUrl.set(`http://localhost:3000${res.fotoUrl}?t=${Date.now()}`);
+        this.avatarUrl.set(`${environment.serverUrl}${res.fotoUrl}?t=${Date.now()}`);
         const current = this.authService.userProfile() || { nombre: '?', apellido: '?' };
         this.authService.userProfile.set({
           ...current,

@@ -7,6 +7,7 @@ import { BreadcrumbComponent } from '../breadcrumb/breadcrumb';
 import { SettingsService, Language } from '../../shared/services/settings.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { ApiService } from '../../shared/services/api.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-layout',
@@ -70,7 +71,7 @@ export class LayoutComponent implements OnInit {
 
     get userAvatarUrl(): string | null {
         const url = this.authService.userProfile()?.foto_url;
-        return url ? `http://localhost:3000${url}` : null;
+        return url ? `${environment.serverUrl}${url}` : null;
     }
 
     toggleSidebar() {

@@ -1,10 +1,15 @@
-const LOCAL_IP = '192.168.50.109';
-
+/**
+ * Entorno de PRODUCCIÓN – App Móvil S-Park (Ionic)
+ * Se usa automáticamente con `ionic build --prod` / `ng build --configuration production`
+ */
 export const environment = {
   production: true,
-  apiUrl: `http://${LOCAL_IP}:3000/api`,
-  apiUrlSimple: `http://${LOCAL_IP}:3001/api`,
+  // Backend principal S-Park (Express en Render)
+  apiUrl: 'https://spark-backend-sk78.onrender.com/api',
+  // Backend simple (sin uso en producción, apunta al mismo servidor)
+  apiUrlSimple: 'https://spark-backend-sk78.onrender.com/api',
 
+  // 🔥 CONFIG FIREBASE
   firebaseConfig: {
     apiKey: "AIzaSyBQhWIkSv40MNTpIwfYxTBYhS-UGix30S8",
     authDomain: "app-login-f7a8f.firebaseapp.com",
