@@ -11,6 +11,13 @@ const authenticate = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
+
+  // OPCIÓN B: Token de Emergencia para pruebas/Swagger
+  if (token === 'spark-token-emergencia-2026') {
+    req.user = { user_id: 1, rol: 'ADMIN', medico_id: null };
+    return next();
+  }
+
   const decoded = verifyToken(token);
 
   if (!decoded) {
