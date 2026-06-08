@@ -1,8 +1,9 @@
 const axios = require('axios');
+const API_URL = process.env.API_BASE_URL || 'https://spark-backend-sk78.onrender.com/api';
 
 async function showToken() {
   try {
-    const response = await axios.post('http://localhost:3000/api/auth/login', {
+    const response = await axios.post(`${API_URL}/auth/login`, {
       email: 'admin@spark.com',
       password: 'admin123'
     });

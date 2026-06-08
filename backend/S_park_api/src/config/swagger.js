@@ -10,8 +10,12 @@ const options = {
     },
     servers: [
       {
+        url: process.env.API_BASE_URL || 'https://spark-backend-sk78.onrender.com/api',
+        description: 'Servidor de Producción (Render)',
+      },
+      {
         url: 'http://localhost:3000/api',
-        description: 'Servidor de Desarrollo',
+        description: 'Servidor de Desarrollo (local)',
       },
     ],
     components: {
