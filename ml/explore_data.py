@@ -89,8 +89,8 @@ print(df_updrs['total_UPDRS'].describe())
 print("\n--- Distribución propuesta de Niveles de Riesgo ---")
 df_updrs['nivel_riesgo'] = pd.cut(
     df_updrs['total_UPDRS'],
-    bins=[0, 25, 40, float('inf')],
-    labels=['BAJO', 'MEDIO', 'ALTO']
+    bins=[0, 32, float('inf')],
+    labels=['BAJO', 'ALTO']
 )
 print(df_updrs['nivel_riesgo'].value_counts().sort_index())
 
@@ -175,10 +175,10 @@ print(f"""
      - Features: {X_oxford.shape[1]}
      - Clases:   Sano (0) = {(y_oxford == 0).sum()}, Parkinson (1) = {(y_oxford == 1).sum()}
 
-  📊 Dataset UPDRS (Clasificación Multiclase):
+  📊 Dataset UPDRS (Clasificación Binaria):
      - Muestras: {X_updrs.shape[0]}
      - Features: {X_updrs.shape[1]}
-     - Clases:   Bajo = {(y_updrs == 'BAJO').sum()}, Medio = {(y_updrs == 'MEDIO').sum()}, Alto = {(y_updrs == 'ALTO').sum()}
+     - Clases:   Bajo = {(y_updrs == 'BAJO').sum()}, Alto = {(y_updrs == 'ALTO').sum()}
 
   ✅ Los datos están limpios y listos para el entrenamiento.
   ➡️  Siguiente paso: Ejecutar train_models.py para entrenar

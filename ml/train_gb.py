@@ -71,7 +71,7 @@ X_train_ox, X_test_ox, y_train_ox, y_test_ox = train_test_split(
 # UPDRS (Multiclase)
 X_up = df_updrs.drop(columns=['nivel_riesgo'])
 y_up = df_updrs['nivel_riesgo']
-class_mapping = {'BAJO': 0, 'MEDIO': 1, 'ALTO': 2}
+class_mapping = {'BAJO': 0, 'ALTO': 1}
 y_up_encoded = y_up.map(class_mapping)
 
 X_train_up, X_test_up, y_train_up, y_test_up = train_test_split(
@@ -123,9 +123,9 @@ print(f"   - F1-Score:             {f1_ox:.4f}")
 print(f"   - Log Loss:             {loss_ox:.4f}")
 print(f"   - AUC-ROC:              {auc_ox:.4f}")
 
-# PASO 5: MODELO 2 - GRADIENT BOOSTING MULTICLASE
+# PASO 5: MODELO 2 - GRADIENT BOOSTING BINARIO (Riesgo)
 print("\n" + "=" * 60)
-print("  ENTRENANDO MODELO 2: GB MULTICLASE (UPDRS)")
+print("  ENTRENANDO MODELO 2: GB BINARIO (Riesgo)")
 print("=" * 60)
 
 gb_multiclass = GradientBoostingClassifier(
@@ -135,26 +135,26 @@ gb_multiclass = GradientBoostingClassifier(
     random_state=42
 )
 
-print("Entrenando Gradient Boosting Multiclase...")
+print("Entrenando Gradient Boosting Binario (Riesgo)...")
 gb_multiclass.fit(X_train_up_scaled, y_train_up)
 y_pred_up = gb_multiclass.predict(X_test_up_scaled)
-y_prob_up = gb_multiclass.predict_proba(X_test_up_scaled)
+y_prob_up = gb_multiclass.predict_proba(X_test_up_scaled)[:, 1]
 
 # Métricas
 acc_up = accuracy_score(y_test_up, y_pred_up)
-prec_up = precision_score(y_test_up, y_pred_up, average='macro')
-rec_up = recall_score(y_test_up, y_pred_up, average='macro')
-f1_up = f1_score(y_test_up, y_pred_up, average='macro')
-loss_up = log_loss(y_test_up, y_prob_up)
-auc_up = roc_auc_score(y_test_up, y_prob_up, multi_class='ovr', average='macro')
+prec_up = precision_score(y_test_up, y_pred_up)
+rec_up = recall_score(y_test_up, y_pred_up)
+f1_up = f1_score(y_test_up, y_pred_up)
+loss_up = log_loss(y_test_up, gb_multiclass.predict_proba(X_test_up_scaled))
+auc_up = roc_auc_score(y_test_up, y_prob_up)
 
-print("\nMETRICAS GB MULTICLASE (TEST):")
+print("\nMETRICAS GB BINARIO (TEST):")
 print(f"   - Exactitud (Accuracy): {acc_up:.4f}")
-print(f"   - Macro Precision:      {prec_up:.4f}")
-print(f"   - Macro Sensibilidad:   {rec_up:.4f}")
-print(f"   - Macro F1-Score:       {f1_up:.4f}")
+print(f"   - Precision:            {prec_up:.4f}")
+print(f"   - Sensibilidad (Recall):{rec_up:.4f}")
+print(f"   - F1-Score:             {f1_up:.4f}")
 print(f"   - Log Loss:             {loss_up:.4f}")
-print(f"   - Macro AUC-ROC:        {auc_up:.4f}")
+print(f"   - AUC-ROC:              {auc_up:.4f}")
 
 # PASO 6: GUARDAR MODELOS Y MATRICES DE CONFUSION
 print("\n--- PASO 6: Guardando modelos y matrices de confusion ---")
@@ -175,8 +175,8 @@ axes[0].set_xlabel("Prediccion")
 # UPDRS
 cm_up = confusion_matrix(y_test_up, y_pred_up)
 sns.heatmap(cm_up, annot=True, fmt='d', cmap='Reds', ax=axes[1],
-            xticklabels=['Bajo', 'Medio', 'Alto'], yticklabels=['Bajo', 'Medio', 'Alto'])
-axes[1].set_title("GB - Confusion Matrix (UPDRS Multiclase)")
+            xticklabels=['Bajo', 'Alto'], yticklabels=['Bajo', 'Alto'])
+axes[1].set_title("GB - Confusion Matrix (UPDRS Riesgo Binario)")
 axes[1].set_ylabel("Valor Real")
 axes[1].set_xlabel("Prediccion")
 

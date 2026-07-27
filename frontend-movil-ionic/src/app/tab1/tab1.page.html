@@ -98,14 +98,14 @@
         </div>
       </div>
 
-      <!-- Spinner sofisticado de análisis en progreso -->
-      <div class="analysis-loading-box" *ngIf="isAnalyzing">
-        <div class="spinner-circle-loader">
-          <ion-spinner name="crescent"></ion-spinner>
-        </div>
-        <p class="loader-title">Analizando frecuencias vocales...</p>
-        <p class="loader-desc">Extrayendo variaciones de tono, temblores y ruido (Jitter y Shimmer)</p>
-      </div>
+  <!-- Overlay de análisis en progreso para bloquear pantalla -->
+  <div class="analysis-loading-overlay" *ngIf="isAnalyzing">
+    <div class="spinner-circle-loader">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+    <p class="loader-title">Analizando voz...</p>
+    <p class="loader-desc">Procesando audio y estimando biomarcadores acústicos mediante IA (Jitter y Shimmer)</p>
+  </div>
     </div>
 
     <!-- SECCIÓN DE HISTORIAL DE ANÁLISIS RECIENTES -->
@@ -116,45 +116,30 @@
       </div>
 
       <div class="analysis-cards-list">
-        <!-- Tarjeta 1 -->
-        <div class="history-item-card">
-          <div class="history-item-icon normal">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
-          </div>
-          <div class="history-item-info">
-            <h3 class="history-date">Ayer, 10:30 AM</h3>
-            <p class="history-duration">Duración de prueba: 15 seg</p>
-          </div>
-          <div class="history-badge success">
-            Normal
-          </div>
+        <!-- Indicador de carga -->
+        <div *ngIf="isLoadingHistory" style="text-align: center; padding: 20px 0;">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <p style="font-size: 13px; color: #5e6e82; margin-top: 8px;">Cargando historial...</p>
         </div>
 
-        <!-- Tarjeta 2 -->
-        <div class="history-item-card">
-          <div class="history-item-icon normal">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
-          </div>
-          <div class="history-item-info">
-            <h3 class="history-date">12 de Octubre, 04:15 PM</h3>
-            <p class="history-duration">Duración de prueba: 14 seg</p>
-          </div>
-          <div class="history-badge success">
-            Normal
-          </div>
+        <!-- Mensaje de historial vacío -->
+        <div *ngIf="!isLoadingHistory && recentAnalyses.length === 0" style="text-align: center; padding: 24px; border: 2px dashed #e2e8f0; border-radius: 16px; margin: 8px 0;">
+          <ion-icon name="mic-off-outline" style="font-size: 32px; color: #a1b3c9; margin-bottom: 6px;"></ion-icon>
+          <p style="margin: 0; font-size: 13.5px; font-weight: 700; color: #0b2239;">Sin análisis registrados</p>
+          <p style="margin: 3px 0 0; font-size: 12px; color: #5e6e82; line-height: 1.4;">Realiza tu primera prueba por voz arriba para ver tus métricas.</p>
         </div>
 
-        <!-- Tarjeta 3 -->
-        <div class="history-item-card">
-          <div class="history-item-icon warning">
-            <ion-icon name="alert-circle-outline"></ion-icon>
+        <!-- Tarjetas dinámicas -->
+        <div class="history-item-card" *ngFor="let item of recentAnalyses">
+          <div class="history-item-icon" [class]="item.iconClass">
+            <ion-icon [name]="item.iconName"></ion-icon>
           </div>
           <div class="history-item-info">
-            <h3 class="history-date">10 de Octubre, 09:20 AM</h3>
-            <p class="history-duration">Duración de prueba: 16 seg</p>
+            <h3 class="history-date">{{ item.fechaLabel }}</h3>
+            <p class="history-duration">Coincidencia de voz: {{ item.probabilidad | number:'1.1-1' }}%</p>
           </div>
-          <div class="history-badge warning">
-            Atención
+          <div class="history-badge" [class]="item.badgeClass">
+            {{ item.label }}
           </div>
         </div>
       </div>

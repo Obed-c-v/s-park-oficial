@@ -57,10 +57,17 @@ export class Tab2Page implements OnInit {
   historial: Appointment[] = [];
   cargando: boolean = false;
 
-  // ── Pastillero simulado ─────────────────────────────────────────────────
+  // ── Pastillero simulado e interactivo ────────────────────────────────────
+  tomasPildoras = [
+    { id: 1, name: 'Levodopa + Carbidopa', hour: 8, minute: 0, ampm: 'AM', dosage: '1 comprimido', taken: false },
+    { id: 2, name: 'Levodopa + Carbidopa', hour: 14, minute: 0, ampm: 'PM', dosage: '1 comprimido', taken: false },
+    { id: 3, name: 'Levodopa + Carbidopa', hour: 20, minute: 0, ampm: 'PM', dosage: '1 comprimido', taken: false }
+  ];
+
   nextPillMinutes: number = 25;
   nextPillName: string = 'Levodopa + Carbidopa';
   nextPillDetail: string = 'Hoy, 14:00 · 1 comprimido';
+  tomaCompletada: boolean = false;
 
   minDate: string = '';
   maxDate: string = '';
@@ -73,6 +80,77 @@ export class Tab2Page implements OnInit {
     this.cargarCitas();
     this.cargarMedicos();
     this.calcularLimitesFechas();
+    this.actualizarPastillero();
+  }
+
+  actualizarPastillero() {
+    const ahora = new Date();
+    const horaActual = ahora.getHours();
+    const minutoActual = ahora.getMinutes();
+    const tiempoActualEnMinutos = horaActual * 60 + minutoActual;
+
+    // Buscar la siguiente toma del día que no haya sido marcada como tomada
+    let proximaToma = this.tomasPildoras.find(t => {
+      const tiempoTomaEnMinutos = t.hour * 60 + t.minute;
+      return !t.taken && tiempoTomaEnMinutos > tiempoActualEnMinutos;
+    });
+
+    // Si no hay tomas futuras hoy que no se hayan tomado, tomar la primera de mañana
+    if (!proximaToma) {
+      proximaToma = this.tomasPildoras.find(t => !t.taken);
+    }
+
+    // Si todas fueron tomadas, reiniciar todas las tomas (nuevo ciclo)
+    if (!proximaToma) {
+      this.tomasPildoras.forEach(t => t.taken = false);
+      proximaToma = this.tomasPildoras[0];
+      this.tomaCompletada = true;
+    } else {
+      this.tomaCompletada = false;
+    }
+
+    this.nextPillName = proximaToma.name;
+    
+    // Formatear hora de la toma
+    const hh = proximaToma.hour > 12 ? proximaToma.hour - 12 : proximaToma.hour;
+    const mm = String(proximaToma.minute).padStart(2, '0');
+    const timeFormatted = `${String(hh).padStart(2, '0')}:${mm} ${proximaToma.ampm}`;
+    
+    this.nextPillDetail = `Hoy, ${timeFormatted} · ${proximaToma.dosage}`;
+
+    // Calcular minutos restantes
+    const tiempoTomaEnMinutos = proximaToma.hour * 60 + proximaToma.minute;
+    let difMinutos = tiempoTomaEnMinutos - tiempoActualEnMinutos;
+    if (difMinutos <= 0) {
+      // Si la hora ya pasó y no se ha tomado, es una toma retrasada
+      difMinutos = 10; 
+      this.nextPillDetail = `¡RETRASADO! Debió tomarse a las ${timeFormatted} · ${proximaToma.dosage}`;
+    }
+    this.nextPillMinutes = difMinutos;
+  }
+
+  marcarComoTomado() {
+    const ahora = new Date();
+    const horaActual = ahora.getHours();
+    const minutoActual = ahora.getMinutes();
+    const tiempoActualEnMinutos = horaActual * 60 + minutoActual;
+
+    // Encontrar la toma activa o más cercana
+    let tomaAMarcar = this.tomasPildoras.find(t => {
+      const tiempoTomaEnMinutos = t.hour * 60 + t.minute;
+      return !t.taken && tiempoTomaEnMinutos > tiempoActualEnMinutos;
+    });
+
+    if (!tomaAMarcar) {
+      tomaAMarcar = this.tomasPildoras.find(t => !t.taken);
+    }
+
+    if (tomaAMarcar) {
+      tomaAMarcar.taken = true;
+      alert(`¡Dosis de ${tomaAMarcar.name} (${tomaAMarcar.dosage}) registrada a las ${ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}!`);
+    }
+
+    this.actualizarPastillero();
   }
 
   calcularLimitesFechas() {

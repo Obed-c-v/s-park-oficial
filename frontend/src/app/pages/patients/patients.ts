@@ -27,6 +27,7 @@ export class Patients implements OnInit {
   isEditing = false;
   editingId: number | null = null;
   formSubmitted = false;
+  cargandoGuardar = false;
 
   patientsList = signal<any[]>([]);
   medicosList = signal<any[]>([]);
@@ -180,6 +181,7 @@ export class Patients implements OnInit {
       return;
     }
 
+    this.cargandoGuardar = true;
     const form = this.patientForm.value;
     const body = {
       email: form.email,
@@ -197,12 +199,14 @@ export class Patients implements OnInit {
        // PATCH /api/pacientes/:id
        this.apiService.patch(`/pacientes/${this.editingId}`, body).subscribe({
          next: (res) => {
+           this.cargandoGuardar = false;
            console.log('PATCH response:', res);
            this.showNotification('Paciente actualizado correctamente', 'success');
            this.fetchData();
            this.closeModal();
          },
          error: (err) => {
+           this.cargandoGuardar = false;
            console.error('PATCH error:', err);
            this.showNotification(err.error?.message || 'Error al actualizar paciente', 'error');
          }
@@ -210,11 +214,13 @@ export class Patients implements OnInit {
     } else {
       this.apiService.post('/pacientes', body).subscribe({
         next: () => {
+          this.cargandoGuardar = false;
           this.showNotification('Paciente registrado correctamente', 'success');
           this.fetchData();
           this.closeModal();
         },
         error: (err) => {
+          this.cargandoGuardar = false;
           this.showNotification(err.error?.message || 'Error al registrar paciente', 'error');
         }
       });

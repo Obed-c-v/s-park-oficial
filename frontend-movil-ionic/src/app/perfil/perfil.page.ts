@@ -13,9 +13,13 @@ export class PerfilPage implements OnInit {
   cargando = true;
   error: string | null = null;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService
+  ) {}
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  ionViewWillEnter() {
     this.cargarPerfil();
   }
 

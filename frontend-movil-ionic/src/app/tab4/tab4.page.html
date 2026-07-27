@@ -24,19 +24,19 @@
         <div class="circular-progress-box">
           <div class="circle-outer">
             <div class="circle-inner">
-              <span class="score-number">78</span>
+              <span class="score-number">{{ vocalScore }}</span>
               <span class="score-max">/100</span>
             </div>
           </div>
         </div>
 
         <div class="score-details-info">
-          <div class="score-status-badge attention">
+          <div class="score-status-badge" [ngClass]="vocalScoreClass">
             <span class="badge-dot"></span>
-            Estado: Atención
+            Estado: {{ vocalScoreStatus }}
           </div>
           <h2 class="score-lbl-title">Salud vocal general</h2>
-          <p class="score-desc-txt">Tu voz se encuentra en un nivel intermedio estable. Registras buenas métricas pero recomendamos ejercitar a diario.</p>
+          <p class="score-desc-txt">{{ vocalScoreDesc }}</p>
         </div>
       </div>
     </div>
@@ -93,15 +93,15 @@
             <ion-icon name="pulse-outline"></ion-icon>
           </div>
         </div>
-        <div class="metric-main-value">82%</div>
+        <div class="metric-main-value">{{ estabilidadVocal }}%</div>
         
         <!-- Mini barra de progreso delgada -->
         <div class="mini-progress-track">
-          <div class="mini-progress-fill blue" style="width: 82%"></div>
+          <div class="mini-progress-fill blue" [style.width.%]="estabilidadVocal"></div>
         </div>
         
         <span class="metric-trend-badge good">
-          <ion-icon name="arrow-up-outline"></ion-icon> Mejor que la semana pasada
+          <ion-icon name="arrow-up-outline"></ion-icon> Basado en análisis de jitter
         </span>
       </div>
 
@@ -113,15 +113,15 @@
             <ion-icon name="wifi-outline"></ion-icon>
           </div>
         </div>
-        <div class="metric-main-value">Bajo</div>
+        <div class="metric-main-value">{{ temblorVocal }}</div>
         
         <!-- Mini barra de progreso delgada -->
         <div class="mini-progress-track">
-          <div class="mini-progress-fill green" style="width: 25%"></div>
+          <div class="mini-progress-fill green" [style.width.%]="estabilidadVocal"></div>
         </div>
         
-        <span class="metric-trend-badge optimal">
-          <span class="bullet optimal"></span> Control óptimo del temblor
+        <span class="metric-trend-badge" [ngClass]="temblorClass">
+          <span class="bullet" [ngClass]="temblorBulletClass"></span> Nivel de temblor: {{ temblorVocal }}
         </span>
       </div>
 
@@ -133,15 +133,15 @@
             <ion-icon name="sparkles-outline"></ion-icon>
           </div>
         </div>
-        <div class="metric-main-value">76%</div>
+        <div class="metric-main-value">{{ claridadHabla }}%</div>
         
         <!-- Mini barra de progreso delgada -->
         <div class="mini-progress-track">
-          <div class="mini-progress-fill orange" style="width: 76%"></div>
+          <div class="mini-progress-fill orange" [style.width.%]="claridadHabla"></div>
         </div>
         
-        <span class="metric-trend-badge warn">
-          <span class="bullet warn"></span> Requiere atención suave
+        <span class="metric-trend-badge" [ngClass]="claridadClass">
+          <span class="bullet" [ngClass]="claridadBulletClass"></span> Relación HNR: {{ claridadHabla }}%
         </span>
       </div>
 
@@ -153,15 +153,15 @@
             <ion-icon name="shield-outline"></ion-icon>
           </div>
         </div>
-        <div class="metric-main-value">28%</div>
+        <div class="metric-main-value">{{ riesgoEstimado }}%</div>
         
         <!-- Mini barra de progreso delgada -->
         <div class="mini-progress-track">
-          <div class="mini-progress-fill purple" style="width: 28%"></div>
+          <div class="mini-progress-fill purple" [style.width.%]="riesgoEstimado"></div>
         </div>
         
-        <span class="metric-trend-badge optimal">
-          <span class="bullet optimal"></span> Probabilidad muy baja
+        <span class="metric-trend-badge" [ngClass]="riesgoClass">
+          <span class="bullet" [ngClass]="riesgoBulletClass"></span> Probabilidad de Parkinson
         </span>
       </div>
     </div>
@@ -180,7 +180,7 @@
             <h4>Variación de tono (Jitter)</h4>
             <p>Mide si la frecuencia fundamental de tu voz oscila de manera involuntaria.</p>
           </div>
-          <span class="tech-status-badge stable">Estable</span>
+          <span class="tech-status-badge" [ngClass]="jitterClass">{{ jitterVal }} ({{ jitterStatus }})</span>
         </div>
 
         <!-- Item 2: Shimmer -->
@@ -189,7 +189,7 @@
             <h4>Variación de volumen (Shimmer)</h4>
             <p>Monitorea si tu voz sufre micro-cambios bruscos en la intensidad del sonido.</p>
           </div>
-          <span class="tech-status-badge moderate">Moderado</span>
+          <span class="tech-status-badge" [ngClass]="shimmerClass">{{ shimmerVal }} ({{ shimmerStatus }})</span>
         </div>
 
         <!-- Item 3: HNR -->
@@ -198,7 +198,7 @@
             <h4>Ruido en la voz (HNR)</h4>
             <p>Proporción entre la señal armónica de tu voz y el aire o ruido no vocalizado.</p>
           </div>
-          <span class="tech-status-badge optimal">Bajo (Óptimo)</span>
+          <span class="tech-status-badge" [ngClass]="hnrClass">{{ hnrVal }} ({{ hnrStatus }})</span>
         </div>
 
         <!-- Item 4: F0 -->
@@ -207,7 +207,7 @@
             <h4>Frecuencia Base (F0)</h4>
             <p>Tono general y altura melódica base sostenida en hercios durante la vocalización.</p>
           </div>
-          <span class="tech-status-badge trend">Estable</span>
+          <span class="tech-status-badge" [ngClass]="f0Class">{{ f0Val }} ({{ f0Status }})</span>
         </div>
       </div>
     </div>

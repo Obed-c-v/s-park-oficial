@@ -86,8 +86,8 @@ X_up = df_updrs.drop(columns=['nivel_riesgo'])
 y_up = df_updrs['nivel_riesgo']
 
 # Mapeamos las clases de texto a números para que los algoritmos calculen mejor las probabilidades
-# BAJO -> 0, MEDIO -> 1, ALTO -> 2
-class_mapping = {'BAJO': 0, 'MEDIO': 1, 'ALTO': 2}
+# BAJO -> 0, ALTO -> 1
+class_mapping = {'BAJO': 0, 'ALTO': 1}
 y_up_encoded = y_up.map(class_mapping)
 
 X_train_up, X_test_up, y_train_up, y_test_up = train_test_split(
@@ -169,7 +169,7 @@ print(f"   - AUC-ROC:              {auc_ox:.4f} (Capacidad de separar sanos de e
 # PASO 5: MODELO 2 - RANDOM FOREST MULTICLASE (Nivel de Riesgo UPDRS)
 # ============================================================
 print("\n" + "=" * 60)
-print("  ENTRENANDO MODELO 2: RANDOM FOREST MULTICLASE")
+print("  ENTRENANDO MODELO 2: RANDOM FOREST BINARIO (Riesgo)")
 print("=" * 60)
 
 rf_multiclass = RandomForestClassifier(
@@ -184,25 +184,23 @@ print("✅ Modelo entrenado exitosamente.")
 
 # Predicciones
 y_pred_up = rf_multiclass.predict(X_test_up_scaled)
-y_prob_up = rf_multiclass.predict_proba(X_test_up_scaled) # Devuelve probabilidades para las 3 clases
+y_prob_up = rf_multiclass.predict_proba(X_test_up_scaled)[:, 1] # Probabilidad de la clase positiva (Riesgo Alto = 1)
 
-# Cálculo de métricas multiclase
+# Cálculo de métricas
 acc_up = accuracy_score(y_test_up, y_pred_up)
-# Usamos average='macro' para calcular la métrica promedio por clase de forma no sesgada
-prec_up = precision_score(y_test_up, y_pred_up, average='macro')
-rec_up = recall_score(y_test_up, y_pred_up, average='macro')
-f1_up = f1_score(y_test_up, y_pred_up, average='macro')
-loss_up = log_loss(y_test_up, y_prob_up)
-# Para AUC-ROC multiclase usamos One-vs-Rest (ovr)
-auc_up = roc_auc_score(y_test_up, y_prob_up, multi_class='ovr', average='macro')
+prec_up = precision_score(y_test_up, y_pred_up)
+rec_up = recall_score(y_test_up, y_pred_up)
+f1_up = f1_score(y_test_up, y_pred_up)
+loss_up = log_loss(y_test_up, rf_multiclass.predict_proba(X_test_up_scaled))
+auc_up = roc_auc_score(y_test_up, y_prob_up)
 
 print("\n📈 METRICAS DE EVALUACIÓN (TEST):")
 print(f"   - Exactitud (Accuracy): {acc_up:.4f}")
-print(f"   - Macro Precisión:      {prec_up:.4f}")
-print(f"   - Macro Sensibilidad:   {rec_up:.4f}")
-print(f"   - Macro F1-Score:       {f1_up:.4f}")
+print(f"   - Precisión:            {prec_up:.4f}")
+print(f"   - Sensibilidad (Recall):{rec_up:.4f}")
+print(f"   - F1-Score:             {f1_up:.4f}")
 print(f"   - Log Loss:             {loss_up:.4f}")
-print(f"   - Macro AUC-ROC:        {auc_up:.4f}")
+print(f"   - AUC-ROC:              {auc_up:.4f}")
 
 
 # ============================================================
@@ -269,8 +267,8 @@ axes[0].set_xlabel("Predicción")
 # UPDRS
 cm_up = confusion_matrix(y_test_up, y_pred_up)
 sns.heatmap(cm_up, annot=True, fmt='d', cmap='Purples', ax=axes[1],
-            xticklabels=['Bajo', 'Medio', 'Alto'], yticklabels=['Bajo', 'Medio', 'Alto'])
-axes[1].set_title("Matriz de Confusión (UPDRS Multiclase)")
+            xticklabels=['Bajo', 'Alto'], yticklabels=['Bajo', 'Alto'])
+axes[1].set_title("Matriz de Confusión (UPDRS Riesgo Binario)")
 axes[1].set_ylabel("Valor Real")
 axes[1].set_xlabel("Predicción")
 

@@ -88,30 +88,104 @@ const getDashboardStats = async (medicoId, rol) => {
   }
 
   const result = await query(statsQ, params);
-  return result.rows[0];
+  const stats = result.rows[0] || {};
+
+  // Actividad Reciente (Últimas 5 pruebas de voz de pacientes asociados, agrupado por la prueba Jitter biomarcador_id=1)
+  let actQ = `
+    SELECT 
+      p.apellido || ', ' || p.nombre as paciente,
+      rb.fecha_registro as fecha,
+      rb.id as id_prueba,
+      rb.resultado_ia->>'riesgo' as riesgo
+    FROM registros_biomarcador rb
+    JOIN pacientes p ON rb.paciente_id = p.id
+    JOIN expedientes e ON p.id = e.paciente_id
+    WHERE rb.biomarcador_id = 1
+  `;
+  
+  const actParams = [];
+  if (rol !== 'ADMIN') {
+    actQ += ` AND e.medico_responsable_id = $1`;
+    actParams.push(medicoId);
+  }
+  
+  actQ += ` ORDER BY rb.fecha_registro DESC LIMIT 5`;
+  
+  const actResult = await query(actQ, actParams);
+  stats.actividad_reciente = actResult.rows;
+
+  return stats;
 };
 
-const createRegistroVoz = async (pacienteId, audioBase64) => {
+const createRegistroVoz = async (pacienteId, audioBase64, explicitMedicoId = null) => {
   // 1. Enviar audio al microservicio Flask
-  const flaskUrl = 'http://localhost:5000/api/predict_audio';
-  const response = await axios.post(flaskUrl, { audio: audioBase64 });
-  const data = response.data;
+  let baseUrl = process.env.ML_API_URL || process.env.FLASK_API_URL || 'http://localhost:5000';
+  if (baseUrl && !baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+    baseUrl = `http://${baseUrl}`;
+  }
+  if (baseUrl && (baseUrl.includes('http://spark-ia') || baseUrl.includes('http://spark-ia-8zi1')) && !baseUrl.includes('.onrender.com')) {
+    baseUrl = 'https://spark-ia-8zi1.onrender.com';
+  }
+  const flaskUrl = `${baseUrl}/api/predict_audio`;
 
-  // 2. Consultar médico responsable desde el expediente
-  const expRes = await query(`
-    SELECT medico_responsable_id 
-    FROM expedientes 
-    WHERE paciente_id = $1 
-    LIMIT 1
-  `, [pacienteId]);
-  
-  const medicoId = expRes.rows[0]?.medico_responsable_id || null;
+  let data;
+  try {
+    const response = await axios.post(flaskUrl, { audio: audioBase64 }, {
+      timeout: 30000 // 30 segundos máximo
+    });
+    data = response.data;
+  } catch (flaskErr) {
+    const detail = flaskErr.response?.data?.error || flaskErr.message;
+    throw { statusCode: 502, message: `Error en el microservicio de IA: ${detail}` };
+  }
+
+  // Validar que Flask devolvió biomarcadores
+  if (!data || !data.biomarcadores) {
+    throw {
+      statusCode: 502,
+      message: `El microservicio de IA no devolvió biomarcadores. Respuesta: ${JSON.stringify(data)}`
+    };
+  }
+
+  // 2. Buscar médico responsable por múltiples rutas
+  let medicoId = explicitMedicoId;
+
+  if (!medicoId) {
+    // Ruta 1: expediente del paciente (relación principal)
+    const expRes = await query(
+      `SELECT medico_responsable_id FROM expedientes WHERE paciente_id = $1 LIMIT 1`,
+      [pacienteId]
+    );
+    if (expRes.rows[0]?.medico_responsable_id) {
+      medicoId = expRes.rows[0].medico_responsable_id;
+    }
+  }
+
+  if (!medicoId) {
+    // Ruta 2: médico de la cita más reciente del paciente
+    const citaRes = await query(
+      `SELECT medico_id FROM citas WHERE paciente_id = $1 ORDER BY fecha_hora DESC LIMIT 1`,
+      [pacienteId]
+    );
+    if (citaRes.rows[0]?.medico_id) {
+      medicoId = citaRes.rows[0].medico_id;
+    }
+  }
+
+  // Validar que se asignó un médico (medico_id no puede ser nulo en la BD)
+  if (!medicoId) {
+    throw {
+      statusCode: 400,
+      message: 'No se puede registrar el biomarcador: El paciente no tiene un médico asignado en su expediente.'
+    };
+  }
 
   const resultadoIa = {
     probabilidad: data.probabilidad,
     riesgo: data.riesgo,
     interpretacion: data.interpretacion,
-    comparacion_modelos: data.comparacion_modelos
+    comparacion_modelos: data.comparacion_modelos,
+    f0: data.biomarcadores?.f0 ?? null
   };
 
   // 3. Persistir biomarcadores individuales con resultado_ia
@@ -137,8 +211,14 @@ const createRegistroVoz = async (pacienteId, audioBase64) => {
 };
 
 const probarModelos = async (features) => {
-  const flaskUrl = 'http://localhost:5000/api/predict';
-  const response = await axios.post(flaskUrl, features);
+  let baseUrl = process.env.ML_API_URL || process.env.FLASK_API_URL || 'http://localhost:5000';
+  if (baseUrl && !baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+    baseUrl = `http://${baseUrl}`;
+  }
+  if (baseUrl && (baseUrl.includes('http://spark-ia') || baseUrl.includes('http://spark-ia-8zi1')) && !baseUrl.includes('.onrender.com')) {
+    baseUrl = 'https://spark-ia-8zi1.onrender.com';
+  }
+  const response = await axios.post(`${baseUrl}/api/predict`, features, { timeout: 30000 });
   return response.data;
 };
 

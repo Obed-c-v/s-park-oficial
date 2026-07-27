@@ -30,6 +30,7 @@ export class Login {
   });
 
   errorMessage = '';
+  cargando = false;
 
   onLogin() {
     this.errorMessage = '';
@@ -39,12 +40,14 @@ export class Login {
       return;
     }
 
+    this.cargando = true;
     const { email, password } = this.loginForm.value;
 
     console.log('Sending login request for email:', email);
 
     this.apiService.post<any>('/auth/login', { email, password, source: 'web' }).subscribe({
       next: (res) => {
+        this.cargando = false;
         console.log('Login request succeeded. Response:', res);
         // Extra safety: block patients on the client side too
         if (res.user?.rol === 'PACIENTE') {
@@ -61,6 +64,7 @@ export class Login {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
+        this.cargando = false;
         console.error('Login request failed. Error details:', err);
         this.errorMessage = 'Credenciales incorrectas';
         console.log('errorMessage has been set to:', this.errorMessage);

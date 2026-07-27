@@ -1,0 +1,75 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar style="--background: #0f172a; --color: white;">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab5" style="--color: white;"></ion-back-button>
+    </ion-buttons>
+    <ion-title style="font-weight: 700; letter-spacing: 0.5px;">Historial Médico</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="guardar()" [disabled]="cargando" style="font-weight: 700; --color: #3b82f6;">Guardar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content style="--background: #f8fafc;">
+  <!-- SKELETON MIENTRAS CARGA -->
+  <div *ngIf="cargando" style="text-align: center; margin-top: 64px;">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p style="color: #64748b; margin-top: 12px; font-weight: 500;">Cargando historial...</p>
+  </div>
+
+  <div *ngIf="!cargando && usuario" style="padding: 20px;">
+    
+    <!-- Diagnóstico inicial del médico -->
+    <div style="background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 20px;">
+      <h4 style="margin: 0 0 10px 0; font-size: 11px; font-weight: 700; color: #1e293b; text-transform: uppercase; letter-spacing: 0.8px;">
+        Diagnóstico Clínico Inicial
+      </h4>
+      <p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.5; font-style: italic;">
+        {{ usuario?.diagnostico_inicial || 'Sin diagnóstico registrado por el médico responsable todavía.' }}
+      </p>
+    </div>
+
+    <!-- Alergias y Recetas -->
+    <div style="background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 20px;">
+      <ion-item lines="full" style="--padding-start: 0; margin-bottom: 12px; --background: transparent;">
+        <ion-label position="stacked" style="color: #475569; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Alergias médicas</ion-label>
+        <ion-textarea [(ngModel)]="editAlergias" placeholder="Ej: Penicilina, polen, etc." rows="2" style="font-weight: 500; font-size: 14px; color: #0f172a;"></ion-textarea>
+      </ion-item>
+
+      <ion-item lines="none" style="--padding-start: 0; --background: transparent;">
+        <ion-label position="stacked" style="color: #475569; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Recetas y Medicamentos activos</ion-label>
+        <ion-textarea [(ngModel)]="editRecetas" placeholder="Ej: Levodopa 100mg cada 8 horas." rows="3" style="font-weight: 500; font-size: 14px; color: #0f172a;"></ion-textarea>
+      </ion-item>
+    </div>
+
+    <!-- Notas clínicas históricas -->
+    <h3 style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 24px 8px 12px 8px; letter-spacing: 0.8px;">
+      Notas de Seguimiento del Médico
+    </h3>
+
+    <div *ngIf="cargandoNotas" style="text-align: center; padding: 24px;">
+      <ion-spinner name="crescent" size="small"></ion-spinner>
+    </div>
+
+    <div *ngIf="!cargandoNotas && notasClinicas.length === 0" style="background: white; border-radius: 20px; padding: 24px; text-align: center; color: #94a3b8; font-size: 14px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(0,0,0,0.01);">
+      No hay notas de seguimiento adicionales guardadas en tu expediente.
+    </div>
+
+    <div *ngIf="!cargandoNotas && notasClinicas.length > 0">
+      <div *ngFor="let nota of notasClinicas" style="background: white; border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.02);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="background: #f1f5f9; color: #475569; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.3px;">
+            {{ nota.tipo }}
+          </span>
+          <span style="color: #94a3b8; font-size: 11px; font-weight: 500;">
+            {{ nota.created_at | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+        <p style="margin: 0; font-size: 13.5px; color: #475569; line-height: 1.45;">
+          {{ nota.contenido }}
+        </p>
+      </div>
+    </div>
+
+  </div>
+</ion-content>

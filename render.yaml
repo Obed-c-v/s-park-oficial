@@ -7,6 +7,9 @@ services:
     startCommand: gunicorn app:app
     rootDir: ml
     plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
 
   # 2. Express Backend
   - type: web
@@ -21,6 +24,11 @@ services:
         fromDatabase:
           name: spark-db
           property: connectionString
+      - key: ML_API_URL
+        fromService:
+          type: web
+          name: spark-ia
+          property: host
       - key: FLASK_API_URL
         fromService:
           type: web
@@ -29,19 +37,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
 
-  # 3. Web Admin Panel (Sitio Estático)
-# 3. Web Admin Panel (Sitio Estático)
-  - type: web
-    name: spark-admin-panel
-    env: static
-    buildCommand: npm install --legacy-peer-deps && npm run build
-    staticPublishPath: dist/S-park/browser
-    rootDir: frontend
-    envVars:
-      - key: SKIP_INSTALL_DEPS
-        value: "true"
-
 databases:
-  # 4. PostgreSQL Database
+  # 3. PostgreSQL Database
   - name: spark-db
     plan: free

@@ -32,6 +32,7 @@ export class Register {
 
   errorMessage = '';
   successMessage = '';
+  cargando = false;
 
   onRegister() {
     this.errorMessage = '';
@@ -42,14 +43,18 @@ export class Register {
       return;
     }
 
+    this.cargando = true;
+
     this.apiService.post<any>('/auth/register', this.registerForm.value).subscribe({
       next: () => {
+        this.cargando = false;
         this.successMessage = 'Registro exitoso. Redirigiendo al login...';
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);
       },
       error: (err) => {
+        this.cargando = false;
         this.errorMessage = err.error?.message || 'Error al registrar médico';
       }
     });

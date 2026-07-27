@@ -226,8 +226,9 @@
 
             <footer class="modal-footer">
                 <button class="btn-secondary" (click)="closeModal()">{{ settingsService.translate('cancel') }}</button>
-                <button class="btn-primary" [disabled]="patientForm.invalid" (click)="savePatient()">
-                    {{ isEditing ? 'Actualizar Paciente' : settingsService.translate('save_patient') }}
+                <button class="btn-primary" [disabled]="patientForm.invalid || cargandoGuardar" (click)="savePatient()">
+                    <span *ngIf="cargandoGuardar">Guardando...</span>
+                    <span *ngIf="!cargandoGuardar">{{ isEditing ? 'Actualizar Paciente' : settingsService.translate('save_patient') }}</span>
                 </button>
             </footer>
         </div>

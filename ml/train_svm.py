@@ -93,7 +93,7 @@ X_train_ox, X_test_ox, y_train_ox, y_test_ox = train_test_split(
 X_up = df_updrs.drop(columns=['nivel_riesgo'])
 y_up = df_updrs['nivel_riesgo']
 
-class_mapping = {'BAJO': 0, 'MEDIO': 1, 'ALTO': 2}
+class_mapping = {'BAJO': 0, 'ALTO': 1}
 y_up_encoded = y_up.map(class_mapping)
 
 X_train_up, X_test_up, y_train_up, y_test_up = train_test_split(
@@ -188,15 +188,8 @@ print(f"   - AUC-ROC:              {auc_ox:.4f}")
 # PASO 5: MODELO 2 - SVM MULTICLASE (UPDRS: Nivel de Riesgo)
 # ============================================================
 print("\n" + "=" * 60)
-print("  ENTRENANDO MODELO 2: SVM MULTICLASE")
+print("  ENTRENANDO MODELO 2: SVM BINARIO (Riesgo)")
 print("=" * 60)
-
-# SVM extiende a multiclase usando la estrategia One-vs-Rest (OvR):
-# Entrena 3 clasificadores binarios internamente:
-#   - Clasificador 1: BAJO vs (MEDIO + ALTO)
-#   - Clasificador 2: MEDIO vs (BAJO + ALTO)
-#   - Clasificador 3: ALTO vs (BAJO + MEDIO)
-# La clase con mayor probabilidad gana.
 
 svm_multiclass = SVC(
     kernel='rbf',
@@ -204,33 +197,32 @@ svm_multiclass = SVC(
     gamma='scale',
     probability=True,
     class_weight='balanced',
-    decision_function_shape='ovr',  # One-vs-Rest para multiclase
     random_state=42
 )
 
-print("Entrenando SVM Multiclase (dataset grande, puede tardar ~30 seg)...")
+print("Entrenando SVM Binario (Riesgo) (dataset grande, puede tardar ~30 seg)...")
 svm_multiclass.fit(X_train_up_scaled, y_train_up)
 print("Modelo entrenado exitosamente.")
 
 # Predicciones
 y_pred_up = svm_multiclass.predict(X_test_up_scaled)
-y_prob_up = svm_multiclass.predict_proba(X_test_up_scaled)
+y_prob_up = svm_multiclass.predict_proba(X_test_up_scaled)[:, 1]
 
 # Metricas
 acc_up = accuracy_score(y_test_up, y_pred_up)
-prec_up = precision_score(y_test_up, y_pred_up, average='macro')
-rec_up = recall_score(y_test_up, y_pred_up, average='macro')
-f1_up = f1_score(y_test_up, y_pred_up, average='macro')
-loss_up = log_loss(y_test_up, y_prob_up)
-auc_up = roc_auc_score(y_test_up, y_prob_up, multi_class='ovr', average='macro')
+prec_up = precision_score(y_test_up, y_pred_up)
+rec_up = recall_score(y_test_up, y_pred_up)
+f1_up = f1_score(y_test_up, y_pred_up)
+loss_up = log_loss(y_test_up, svm_multiclass.predict_proba(X_test_up_scaled))
+auc_up = roc_auc_score(y_test_up, y_prob_up)
 
 print("\nMETRICAS DE EVALUACION (TEST):")
 print(f"   - Exactitud (Accuracy): {acc_up:.4f}")
-print(f"   - Macro Precision:      {prec_up:.4f}")
-print(f"   - Macro Sensibilidad:   {rec_up:.4f}")
-print(f"   - Macro F1-Score:       {f1_up:.4f}")
+print(f"   - Precision:            {prec_up:.4f}")
+print(f"   - Sensibilidad (Recall):{rec_up:.4f}")
+print(f"   - F1-Score:             {f1_up:.4f}")
 print(f"   - Log Loss:             {loss_up:.4f}")
-print(f"   - Macro AUC-ROC:        {auc_up:.4f}")
+print(f"   - AUC-ROC:              {auc_up:.4f}")
 
 
 # ============================================================
@@ -257,8 +249,8 @@ axes[0].set_xlabel("Prediccion")
 # UPDRS
 cm_up = confusion_matrix(y_test_up, y_pred_up)
 sns.heatmap(cm_up, annot=True, fmt='d', cmap='Reds', ax=axes[1],
-            xticklabels=['Bajo', 'Medio', 'Alto'], yticklabels=['Bajo', 'Medio', 'Alto'])
-axes[1].set_title("SVM - Confusion Matrix (UPDRS Multiclase)")
+            xticklabels=['Bajo', 'Alto'], yticklabels=['Bajo', 'Alto'])
+axes[1].set_title("SVM - Confusion Matrix (UPDRS Riesgo Binario)")
 axes[1].set_ylabel("Valor Real")
 axes[1].set_xlabel("Prediccion")
 

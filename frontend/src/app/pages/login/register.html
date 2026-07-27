@@ -195,7 +195,10 @@
                 }
             </div>
 
-            <button type="submit" class="btn-primary" [disabled]="registerForm.invalid">Registrarse</button>
+            <button type="submit" class="btn-primary" [disabled]="registerForm.invalid || cargando">
+                <span *ngIf="cargando">Registrando...</span>
+                <span *ngIf="!cargando">Registrarse</span>
+            </button>
 
             <div class="form-footer">
                 <a routerLink="/login" class="forgot-password">¿Ya tiene cuenta? Inicie sesión</a>

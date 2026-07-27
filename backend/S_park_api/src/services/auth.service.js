@@ -70,21 +70,34 @@ const login = async (email, password, source = null) => {
   }
 
   let medico_id = null;
+  let paciente_id = null;
   if (user.rol === 'MEDICO') {
     const medicoQuery = 'SELECT id FROM medicos WHERE usuario_id = $1';
     const medicoResult = await query(medicoQuery, [user.id]);
     if (medicoResult.rows.length > 0) {
       medico_id = medicoResult.rows[0].id;
     }
+  } else if (user.rol === 'PACIENTE') {
+    const pacienteQuery = `
+      SELECT p.id as paciente_id, e.medico_responsable_id 
+      FROM pacientes p
+      LEFT JOIN expedientes e ON p.id = e.paciente_id
+      WHERE p.usuario_id = $1
+    `;
+    const pacienteResult = await query(pacienteQuery, [user.id]);
+    if (pacienteResult.rows.length > 0) {
+      paciente_id = pacienteResult.rows[0].paciente_id;
+      medico_id = pacienteResult.rows[0].medico_responsable_id;
+    }
   }
 
   await query('UPDATE usuarios SET ultimo_login = NOW() WHERE id = $1', [user.id]);
 
-  const token = generateToken({ user_id: user.id, rol: user.rol, medico_id });
+  const token = generateToken({ user_id: user.id, rol: user.rol, medico_id, paciente_id });
 
   return {
     token,
-    user: { id: user.id, email: user.email, rol: user.rol, medico_id }
+    user: { id: user.id, email: user.email, rol: user.rol, medico_id, paciente_id }
   };
 };
 
@@ -119,14 +132,18 @@ const getMe = async (userId, rol, medicoId) => {
   } else if (rol === 'PACIENTE') {
     const q = `
       SELECT p.id, p.nombre, p.apellido, p.fecha_nacimiento, p.telefono,
+             p.alergias, p.recetas, p.racha_dias, p.puntos_bienestar,
              (SELECT nc.contenido 
               FROM notas_clinicas nc 
               JOIN expedientes e ON nc.expediente_id = e.id 
               WHERE e.paciente_id = p.id AND nc.tipo = 'INICIAL' 
               LIMIT 1) as diagnostico_inicial,
-             u.email, u.ultimo_login
+             u.email, u.ultimo_login,
+             e.id as expediente_id,
+             e.medico_responsable_id as medico_id
       FROM pacientes p
       JOIN usuarios u ON p.usuario_id = u.id
+      LEFT JOIN expedientes e ON p.id = e.paciente_id
       WHERE p.usuario_id = $1
     `;
     const res = await query(q, [userId]);
@@ -140,15 +157,33 @@ const getMe = async (userId, rol, medicoId) => {
  * Update the profile of the currently logged-in user.
  */
 const updateProfile = async (userId, rol, medicoId, data) => {
-  const { nombre, apellido, telefono, especialidad } = data;
+  const { nombre, apellido, telefono, especialidad, alergias, recetas } = data;
 
   if (rol === 'MEDICO' && medicoId) {
     await query(
       'UPDATE medicos SET nombre = $1, apellido = $2, telefono = $3, especialidad = $4 WHERE id = $5',
       [nombre, apellido, telefono || null, especialidad || null, medicoId]
     );
+  } else if (rol === 'PACIENTE') {
+    if (nombre !== undefined && apellido !== undefined) {
+      await query(
+        'UPDATE pacientes SET nombre = $1, apellido = $2, telefono = $3 WHERE usuario_id = $4',
+        [nombre, apellido, telefono || null, userId]
+      );
+    }
+    if (alergias !== undefined) {
+      await query(
+        'UPDATE pacientes SET alergias = $1 WHERE usuario_id = $2',
+        [alergias, userId]
+      );
+    }
+    if (recetas !== undefined) {
+      await query(
+        'UPDATE pacientes SET recetas = $1 WHERE usuario_id = $2',
+        [recetas, userId]
+      );
+    }
   }
-  // For ADMIN: no clinical profile to update (name is stored elsewhere or display-only)
   return { message: 'Profile updated successfully' };
 };
 

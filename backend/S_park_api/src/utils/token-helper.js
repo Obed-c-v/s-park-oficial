@@ -1,5 +1,5 @@
 const axios = require('axios');
-const API_URL = process.env.API_BASE_URL || 'https://spark-backend-sk78.onrender.com/api';
+const API_URL = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 3000}/api`;
 
 async function showToken() {
   try {

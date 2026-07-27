@@ -48,7 +48,7 @@ const authorize = require('../middlewares/role.middleware');
  *         description: No autorizado
  */
 router.post('/', authenticate, authorize(['MEDICO', 'ADMIN']), registrosController.createRegistro);
-router.post('/voz', registrosController.createRegistroVoz);
+router.post('/voz', authenticate, registrosController.createRegistroVoz);
 
 /**
  * @swagger

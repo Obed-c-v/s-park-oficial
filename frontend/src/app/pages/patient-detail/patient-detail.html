@@ -118,7 +118,7 @@
                 <div class="card-header-ai">
                     <div class="header-ai-title">
                         <span class="ai-spark-icon">⚡</span>
-                        <h3>Diagnóstico de Inteligencia Artificial (Ensemble de 4 Modelos)</h3>
+                        <h3>Diagnóstico de Inteligencia Artificial (Modelo Random Forest)</h3>
                     </div>
                     <span class="ai-badge-status">Procesamiento E2E Activo</span>
                 </div>
@@ -149,51 +149,7 @@
 
                     <!-- Consenso de 4 Modelos de Machine Learning & Interpretación -->
                     <div class="ai-right-column">
-                        <div class="models-consenus-box" *ngIf="patientData().modelComparisons">
-                            <h4 class="ai-sub-title">Consenso de Modelos de ML</h4>
-                            <div class="models-grid-bars">
-                                <!-- Random Forest -->
-                                <div class="model-bar-row">
-                                    <div class="model-meta">
-                                        <span class="model-name">Random Forest</span>
-                                        <span class="model-val">{{patientData().modelComparisons['Random Forest'] | number:'1.1-1'}}%</span>
-                                    </div>
-                                    <div class="model-progress-track">
-                                        <div class="model-progress-fill rf" [style.width.%]="patientData().modelComparisons['Random Forest']"></div>
-                                    </div>
-                                </div>
-                                <!-- SVM -->
-                                <div class="model-bar-row">
-                                    <div class="model-meta">
-                                        <span class="model-name">SVM (Support Vector Machine)</span>
-                                        <span class="model-val">{{patientData().modelComparisons['SVM'] | number:'1.1-1'}}%</span>
-                                    </div>
-                                    <div class="model-progress-track">
-                                        <div class="model-progress-fill svm" [style.width.%]="patientData().modelComparisons['SVM']"></div>
-                                    </div>
-                                </div>
-                                <!-- Gradient Boosting -->
-                                <div class="model-bar-row">
-                                    <div class="model-meta">
-                                        <span class="model-name">Gradient Boosting</span>
-                                        <span class="model-val">{{patientData().modelComparisons['Gradient Boosting'] | number:'1.1-1'}}%</span>
-                                    </div>
-                                    <div class="model-progress-track">
-                                        <div class="model-progress-fill gb" [style.width.%]="patientData().modelComparisons['Gradient Boosting']"></div>
-                                    </div>
-                                </div>
-                                <!-- XGBoost -->
-                                <div class="model-bar-row">
-                                    <div class="model-meta">
-                                        <span class="model-name">XGBoost (eXtreme Gradient Boosting)</span>
-                                        <span class="model-val">{{patientData().modelComparisons['XGBoost'] | number:'1.1-1'}}%</span>
-                                    </div>
-                                    <div class="model-progress-track">
-                                        <div class="model-progress-fill xgb" [style.width.%]="patientData().modelComparisons['XGBoost']"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
 
                         <!-- Interpretación clínica en burbuja -->
                         <div class="ai-interpretation-box">

@@ -39,46 +39,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr *ngFor="let act of stats()?.actividad_reciente">
                             <td>
                                 <div class="patient-info">
-                                    <span class="p-name">García, Manuel</span>
+                                    <span class="p-name">{{ act.paciente }}</span>
                                 </div>
                             </td>
-                            <td>Oct 29, 2026</td>
-                            <td>#VOX-782</td>
-                            <td><span class="badge badge-low">{{ settingsService.translate('low_risk') }}</span></td>
-                        </tr>
-                        <tr>
+                            <td>{{ act.fecha | date:'mediumDate' }}</td>
+                            <td>#{{ act.id_prueba }}</td>
                             <td>
-                                <div class="patient-info">
-                                    <span class="p-name">López, Elena</span>
-                                </div>
-                            </td>
-                            <td>Oct 29, 2026</td>
-                            <td>#VOX-781</td>
-                            <td><span class="badge badge-high">{{ settingsService.translate('high_risk') }}</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="patient-info">
-                                    <span class="p-name">Martínez, Juan</span>
-                                </div>
-                            </td>
-                            <td>Oct 28, 2026</td>
-                            <td>#VOX-779</td>
-                            <td><span class="badge badge-medium">{{ settingsService.translate('medium_risk') }}</span>
+                                <span class="badge" 
+                                      [ngClass]="{
+                                        'badge-low': act.riesgo?.toUpperCase() === 'BAJO' || act.riesgo?.toUpperCase() === 'NORMAL',
+                                        'badge-high': act.riesgo?.toUpperCase() === 'ALTO'
+                                      }">
+                                    {{ 
+                                      act.riesgo?.toUpperCase() === 'BAJO' || act.riesgo?.toUpperCase() === 'NORMAL' ? settingsService.translate('low_risk') : 
+                                      (act.riesgo?.toUpperCase() === 'ALTO' ? settingsService.translate('high_risk') : act.riesgo) 
+                                    }}
+                                </span>
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                <div class="patient-info">
-                                    <span class="p-name">Sánchez, Clara</span>
-                                </div>
+                        <tr *ngIf="!stats()?.actividad_reciente || stats()?.actividad_reciente.length === 0">
+                            <td colspan="4" style="text-align: center; color: #64748b; padding: 24px;">
+                                No hay actividad reciente registrada.
                             </td>
-                            <td>Oct 28, 2026</td>
-                            <td>#VOX-778</td>
-                            <td><span class="badge badge-low">{{ settingsService.translate('low_risk') }}</span></td>
                         </tr>
                     </tbody>
                 </table>

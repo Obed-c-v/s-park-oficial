@@ -4,6 +4,6 @@
  */
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',
-  serverUrl: 'http://localhost:3000',
+  apiUrl: 'https://spark-backend-8zi1.onrender.com/api',
+  serverUrl: 'https://spark-backend-8zi1.onrender.com',
 };

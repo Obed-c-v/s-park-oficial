@@ -160,5 +160,31 @@ Parkinson. Para un caso de "Voz Sana", el resultado ideal es cercano al 0%:
     real (ondas periódicas claras detectadas por autocorrelación) son procesadas 
     para calcular los biomarcadores, ignorando el silencio inicial/final o ruidos 
     de golpeteo al pulsar grabar.
+
+-----------------------------------------------------------------------------
+7. ANÁLISIS DE CASO REAL: ¿CÓMO EXPLICAR UN RESULTADO EN PANTALLA Y SUS DECIMALES?
+-----------------------------------------------------------------------------
+Imagina que en la exposición o revisión muestras un resultado como el de la captura:
+"Voz Débil Detectada - Probabilidad: 82.7% - Riesgo: MEDIO"
+
+* ¿Qué significa y qué está BIEN / MAL interpretado en este resultado?
+  - BIEN INTERPRETADO: "Los biomarcadores del habla (inestabilidad en tono y volumen)
+    tienen un 82.7% de probabilidad de coincidencia con los patrones vocales típicos
+    del Parkinson".
+  - MAL INTERPRETADO: "El paciente tiene un 82.7% de avance de la enfermedad" o
+    "está 82.7% grave". ¡FALSO! El porcentaje mide probabilidad/coincidencia de la IA, 
+    no gravedad clínica. La gravedad estimada de los síntomas es "MEDIO" (Moderada) 
+    y se estima con un modelo diferente basado en la escala UPDRS.
+
+* ¿Por qué el texto descriptivo dice "82.6%" y la etiqueta de abajo dice "82.7%"?
+  - Se debe a una leve discrepancia en el redondeo de decimales (Float Rounding):
+    - El microservicio Flask (Python) calcula e interpreta el promedio del ensamble 
+      (ej. 82.65%) y lo formatea en el texto clínico usando reglas de Python (que a 
+      veces trunca o redondea hacia abajo a 82.6%).
+    - El frontend móvil (Angular/JS) recibe el valor crudo en la respuesta JSON 
+      (82.65) y al renderizar la tarjeta en pantalla aplica la función de JavaScript 
+      `toFixed(1)`, redondeándolo hacia arriba a 82.7%.
+  - Explicación rápida para los sinodales: Es un clásico desfase de formateo visual 
+    entre el Backend (Python) y el Frontend (JavaScript) sobre el mismo valor crudo.
 =============================================================================
 

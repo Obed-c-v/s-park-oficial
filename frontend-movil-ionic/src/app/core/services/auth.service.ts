@@ -21,6 +21,13 @@ export class AuthService {
       tap((res: any) => {
         if (res.token) {
           this.setToken(res.token);
+          if (res.user) {
+            const userActivo = {
+              ...res.user,
+              id: res.user.paciente_id || res.user.id
+            };
+            localStorage.setItem('usuarioActivo', JSON.stringify(userActivo));
+          }
         }
       })
     );
@@ -35,6 +42,13 @@ export class AuthService {
       tap((res: any) => {
         if (res.token) {
           this.setToken(res.token);
+          if (res.user) {
+            const userActivo = {
+              ...res.user,
+              id: res.user.paciente_id || res.user.id
+            };
+            localStorage.setItem('usuarioActivo', JSON.stringify(userActivo));
+          }
         }
       })
     );
@@ -45,7 +59,21 @@ export class AuthService {
   }
 
   getMe(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/auth/me`);
+    return this.http.get(`${this.apiUrl}/auth/me`).pipe(
+      tap((res: any) => {
+        if (res.details) {
+          const userActivo = {
+            id: res.details.id,
+            email: res.details.email,
+            rol: res.rol,
+            medico_id: res.details.medico_id,
+            nombre: res.details.nombre,
+            apellido: res.details.apellido
+          };
+          localStorage.setItem('usuarioActivo', JSON.stringify(userActivo));
+        }
+      })
+    );
   }
 
   getMedicos(): Observable<any[]> {
@@ -58,6 +86,14 @@ export class AuthService {
 
   createCita(medicoId: number, fechaHora: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/citas`, { medico_id: medicoId, fecha_hora: fechaHora });
+  }
+
+  /**
+   * Actualiza el perfil del usuario activo (nombre, apellido, telefono, alergias, recetas).
+   * El backend detecta el rol por el JWT y guarda en la tabla correcta.
+   */
+  updateProfile(_userId: any, _rol: string, _medicoId: any, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/auth/me`, data);
   }
 
   setToken(token: string) {
@@ -78,6 +114,8 @@ export class AuthService {
     localStorage.removeItem('usuarioActivo');
     localStorage.removeItem('sesionActiva');
     this.isAuthenticated$.next(false);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login']).then(() => {
+      window.location.reload();
+    });
   }
 }

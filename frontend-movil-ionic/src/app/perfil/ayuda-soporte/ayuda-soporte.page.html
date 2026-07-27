@@ -1,0 +1,76 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar style="--background: #0f172a; --color: white;">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab5" style="--color: white;"></ion-back-button>
+    </ion-buttons>
+    <ion-title style="font-weight: 700; letter-spacing: 0.5px;">Ayuda y Soporte</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content style="--background: #f8fafc;">
+  <div style="padding: 20px;">
+
+    <!-- Preguntas Frecuentes (FAQ) -->
+    <h3 style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 8px 8px 10px 8px; letter-spacing: 0.8px;">
+      Preguntas Frecuentes
+    </h3>
+    
+    <div style="background: white; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.02);">
+      <ion-accordion-group>
+        <ion-accordion value="faq1">
+          <ion-item slot="header" color="light" style="--min-height: 56px;">
+            <ion-label style="font-size: 13.5px; font-weight: 700; color: #1e293b;">¿Cómo realizo una prueba de voz?</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content" style="font-size: 13px; color: #475569; line-height: 1.5; background: white;">
+            Ve a la pestaña de "Inicio" (primer ícono en la barra inferior), presiona el botón circular del micrófono, concede los permisos de audio en tu celular y sostén la vocalización del sonido "A" de manera clara y constante por al menos 5 segundos. Luego presiona el botón nuevamente para terminar de grabar y procesar.
+          </div>
+        </ion-accordion>
+
+        <ion-accordion value="faq2">
+          <ion-item slot="header" color="light" style="--min-height: 56px;">
+            <ion-label style="font-size: 13.5px; font-weight: 700; color: #1e293b;">¿Qué significan mis métricas de voz?</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content" style="font-size: 13px; color: #475569; line-height: 1.5; background: white;">
+            <strong>Jitter:</strong> Mide pequeñas variaciones del tono de tu voz.<br>
+            <strong>Shimmer:</strong> Evalúa la inestabilidad del volumen vocal.<br>
+            <strong>HNR:</strong> Mide la proporción de sonido limpio frente al ruido de fondo de tu voz.<br>
+            <strong>F0:</strong> Mide la frecuencia fundamental (tono promedio).<br>
+            Nuestra IA compara estas métricas con modelos clínicos para evaluar la estabilidad vocal e identificar signos de fatiga o evolución motora.
+          </div>
+        </ion-accordion>
+
+        <ion-accordion value="faq3">
+          <ion-item slot="header" color="light" style="--min-height: 56px;">
+            <ion-label style="font-size: 13.5px; font-weight: 700; color: #1e293b;">¿Mis datos están seguros?</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content" style="font-size: 13px; color: #475569; line-height: 1.5; background: white;">
+            Sí, tus datos médicos y grabaciones están completamente seguras y encriptadas. No compartimos tus audios con ningún tercero. La información registrada en el historial clínico o expediente solo es visible para ti y tu médico especialista asignado.
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </div>
+
+    <!-- Formulario de Soporte -->
+    <h3 style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 0 8px 10px 8px; letter-spacing: 0.8px;">
+      Contacto con Soporte
+    </h3>
+
+    <div style="background: white; border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(0,0,0,0.02);">
+      <ion-item lines="full" style="--padding-start: 0; margin-bottom: 12px; --background: transparent;">
+        <ion-label position="stacked" style="color: #475569; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Asunto / Tema</ion-label>
+        <ion-input type="text" [(ngModel)]="soporteAsunto" placeholder="Ej: Problemas con el micrófono" style="font-weight: 500; font-size: 14.5px;"></ion-input>
+      </ion-item>
+
+      <ion-item lines="none" style="--padding-start: 0; margin-bottom: 16px; --background: transparent;">
+        <ion-label position="stacked" style="color: #475569; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Mensaje detallado</ion-label>
+        <ion-textarea [(ngModel)]="soporteMensaje" placeholder="Describe brevemente el problema técnico o la duda que tienes." rows="4" style="font-weight: 500; font-size: 14px;"></ion-textarea>
+      </ion-item>
+
+      <ion-button expand="block" (click)="enviarSoporte()" [disabled]="enviando" style="--border-radius: 12px; font-weight: 700; height: 46px; margin-top: 24px;">
+        <ion-spinner *ngIf="enviando" name="crescent" slot="start"></ion-spinner>
+        Enviar Mensaje
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

@@ -1,15 +1,12 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 
-// ⚠️ IP de la PC en la red local Wi-Fi. Si cambia la IP, actualiza aquí.
-const LOCAL_IP = '192.168.50.109';
-
 export const environment = {
   production: false,
   // Backend principal S-Park (Express con BD PostgreSQL completa)
-  apiUrl: `http://${LOCAL_IP}:3000/api`,
+  apiUrl: 'https://spark-backend-8zi1.onrender.com/api',
   // Backend simple del proyecto (auth básica simulada)
-  apiUrlSimple: `http://${LOCAL_IP}:3001/api`,
+  apiUrlSimple: 'https://spark-backend-8zi1.onrender.com/api',
 
   // 🔥 CONFIG FIREBASE (sin uso activo por ahora)
   firebaseConfig: {

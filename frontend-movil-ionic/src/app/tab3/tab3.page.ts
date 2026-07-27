@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../core/services/auth.service';
+import { environment } from 'src/environments/environment';
 
 interface Routine {
+  id?: number;
   title: string;
   subtitle: string;
   difficulty: 'Básico' | 'Intermedio' | 'Avanzado';
@@ -32,8 +36,8 @@ export class Tab3Page implements OnInit {
   rutinaCompletada: boolean = false;
   mostrarFelicitaciones: boolean = false;
 
-  // Catálogo de rutinas suaves para Parkinson / Rigidez
-  rutinas: Record<'cervical' | 'hombros' | 'manos', Routine> = {
+  // Catálogo de rutinas local (fallback)
+  rutinasFallback: Record<'cervical' | 'hombros' | 'manos', Routine> = {
     cervical: {
       title: 'Círculos suaves de cuello sentad@',
       subtitle: 'Movilidad cervical suave · Alivia rigidez en cuello',
@@ -84,10 +88,80 @@ export class Tab3Page implements OnInit {
     }
   };
 
-  constructor() {}
+  // Rutinas activas dinámicas cargadas del backend
+  rutinas: Record<'cervical' | 'hombros' | 'manos', Routine> = { ...this.rutinasFallback };
+
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   ngOnInit() {
-    // Inicialización si fuera requerida
+    this.cargarDatosPaciente();
+    this.cargarRutinasBackend();
+  }
+
+  // Refrescar al entrar a la vista
+  ionViewWillEnter() {
+    this.cargarDatosPaciente();
+  }
+
+  // Carga puntos y racha del paciente desde /auth/me
+  cargarDatosPaciente() {
+    this.authService.getMe().subscribe({
+      next: (res) => {
+        if (res.details) {
+          this.rachaDias = res.details.racha_dias !== undefined ? res.details.racha_dias : 3;
+          this.puntosBienestar = res.details.puntos_bienestar !== undefined ? res.details.puntos_bienestar : 210;
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar datos de progreso del paciente:', err);
+      }
+    });
+  }
+
+  // Carga ejercicios desde el backend y los parsea
+  cargarRutinasBackend() {
+    this.http.get<any[]>(`${environment.apiUrl}/ejercicios`).subscribe({
+      next: (ejercicios) => {
+        if (ejercicios && ejercicios.length > 0) {
+          ejercicios.forEach(ej => {
+            try {
+              let details: any = {};
+              if (typeof ej.descripcion === 'string') {
+                details = JSON.parse(ej.descripcion);
+              } else {
+                details = ej.descripcion;
+              }
+
+              const routine: Routine = {
+                id: ej.id,
+                title: ej.nombre,
+                subtitle: details.subtitle || '',
+                difficulty: ej.nivel || 'Básico',
+                duration: details.duration || '5 min',
+                hint: details.hint || '',
+                target: details.target || '',
+                steps: details.steps || [],
+                precautions: details.precautions || ''
+              };
+
+              // Mapear según el título o id a las categorías
+              if (ej.nombre.toLowerCase().includes('cuello') || ej.nombre.toLowerCase().includes('cervical')) {
+                this.rutinas.cervical = routine;
+              } else if (ej.nombre.toLowerCase().includes('hombro')) {
+                this.rutinas.hombros = routine;
+              } else if (ej.nombre.toLowerCase().includes('mano') || ej.nombre.toLowerCase().includes('dedo')) {
+                this.rutinas.manos = routine;
+              }
+            } catch (err) {
+              console.error('Error parsing exercise details:', err);
+            }
+          });
+        }
+      },
+      error: (err) => {
+        console.warn('No se pudieron cargar ejercicios del backend, usando fallback estático:', err);
+      }
+    });
   }
 
   // Cambiar categoría y cargar la rutina respectiva
@@ -104,14 +178,25 @@ export class Tab3Page implements OnInit {
     if (this.seriesCompleted < this.maxSeries) {
       this.seriesCompleted++;
       
-      // Si se completaron todas las series
+      // Si se completaron todas las series de la rutina
       if (this.seriesCompleted === this.maxSeries) {
         this.rutinaCompletada = true;
         this.mostrarFelicitaciones = true;
         
-        // Sumar puntos de bienestar y aumentar racha
-        this.puntosBienestar += 70;
-        this.rachaDias += 1;
+        // Registrar en el backend
+        this.http.post<any>(`${environment.apiUrl}/ejercicios/completar`, {}).subscribe({
+          next: (res) => {
+            // Actualizar con datos reales del backend
+            this.puntosBienestar = res.puntos_bienestar;
+            this.rachaDias = res.racha_dias;
+          },
+          error: (err) => {
+            console.error('Error al guardar progreso de ejercicios:', err);
+            // Fallback local en caso de error
+            this.puntosBienestar += 70;
+            this.rachaDias += 1;
+          }
+        });
         
         // Ocultar modal de felicitaciones automáticamente tras 5 segundos
         setTimeout(() => {

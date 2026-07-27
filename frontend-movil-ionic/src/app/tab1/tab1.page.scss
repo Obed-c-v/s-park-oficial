@@ -355,45 +355,55 @@ ion-content.app-content {
   }
 }
 
-/* ANALYSIS LOADER BOX */
-.analysis-loading-box {
-  background: #ffffff;
-  border: 1px solid #eef2f8;
-  border-radius: 20px;
-  padding: 22px;
-  width: 100%;
-  max-width: 320px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+/* ANALYSIS LOADER OVERLAY (FULL SCREEN BLOCKER) */
+.analysis-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(11, 34, 57, 0.95); /* Fondo oscuro azul translúcido */
+  z-index: 99999; /* Por encima de cualquier elemento de Ionic */
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
   text-align: center;
-  margin-top: 18px;
-  animation: slideInPill 0.3s ease-out;
+  backdrop-filter: blur(8px);
+  animation: fadeInOverlay 0.3s ease-out;
 
   .spinner-circle-loader {
-    margin-bottom: 12px;
+    margin-bottom: 20px;
     
     ion-spinner {
       --color: #3685f6;
-      width: 36px;
-      height: 36px;
+      width: 56px;
+      height: 56px;
     }
   }
 
   .loader-title {
-    font-size: 13.5px;
-    font-weight: 700;
-    color: #0b2239;
-    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 8px;
+    letter-spacing: -0.3px;
   }
 
   .loader-desc {
-    font-size: 11px;
-    color: #64748b;
+    font-size: 13px;
+    color: #a1b3c9;
     margin: 0;
-    line-height: 1.4;
+    line-height: 1.5;
+    max-width: 300px;
   }
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ==========================================================================
@@ -462,6 +472,11 @@ ion-content.app-content {
       background: rgba(255, 159, 10, 0.08);
       color: #ff9f0a;
     }
+
+    &.danger {
+      background: rgba(235, 68, 90, 0.08);
+      color: #eb445a;
+    }
   }
 
   .history-item-info {
@@ -502,6 +517,11 @@ ion-content.app-content {
     &.warning {
       background: rgba(255, 159, 10, 0.08);
       color: #ff9f0a;
+    }
+
+    &.danger {
+      background: rgba(235, 68, 90, 0.08);
+      color: #eb445a;
     }
   }
 }

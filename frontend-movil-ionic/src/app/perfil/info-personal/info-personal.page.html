@@ -1,0 +1,69 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar style="--background: #0f172a; --color: white;">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab5" style="--color: white;"></ion-back-button>
+    </ion-buttons>
+    <ion-title style="font-weight: 700; letter-spacing: 0.5px;">Información Personal</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="guardar()" [disabled]="cargando" style="font-weight: 700; --color: #3b82f6;">Guardar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content style="--background: #f8fafc;">
+  <!-- SKELETON MIENTRAS CARGA -->
+  <div *ngIf="cargando" style="text-align: center; margin-top: 64px;">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p style="color: #64748b; margin-top: 12px; font-weight: 500;">Cargando...</p>
+  </div>
+
+  <div *ngIf="!cargando && usuario" style="padding: 20px;">
+    <!-- Formulario Datos Editables -->
+    <div style="background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 24px;">
+      <ion-item lines="full" style="--padding-start: 0; margin-bottom: 12px; --background: transparent;">
+        <ion-label position="stacked" style="color: #475569; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Nombre(s)</ion-label>
+        <ion-input type="text" [(ngModel)]="editNombre" style="font-weight: 500; font-size: 15px; color: #0f172a;"></ion-input>
+      </ion-item>
+
+      <ion-item lines="full" style="--padding-start: 0; margin-bottom: 12px; --background: transparent;">
+        <ion-label position="stacked" style="color: #475569; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Apellidos</ion-label>
+        <ion-input type="text" [(ngModel)]="editApellido" style="font-weight: 500; font-size: 15px; color: #0f172a;"></ion-input>
+      </ion-item>
+
+      <ion-item lines="none" style="--padding-start: 0; --background: transparent;">
+        <ion-label position="stacked" style="color: #475569; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Teléfono de contacto</ion-label>
+        <ion-input type="tel" [(ngModel)]="editTelefono" style="font-weight: 500; font-size: 15px; color: #0f172a;" placeholder="Ingresa tu teléfono"></ion-input>
+      </ion-item>
+    </div>
+
+    <!-- Datos de Solo Lectura -->
+    <h3 style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 0 8px 8px 8px; letter-spacing: 0.5px;">
+      Información de Registro (Solo Lectura)
+    </h3>
+    
+    <div style="background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; opacity: 0.85;">
+      <ion-item lines="full" style="--padding-start: 0; --background: transparent;">
+        <ion-label>
+          <p style="font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Correo electrónico</p>
+          <h3 style="font-size: 14px; font-weight: 600; color: #475569; margin-top: 4px;">{{ usuario?.email }}</h3>
+        </ion-label>
+      </ion-item>
+
+      <ion-item lines="full" style="--padding-start: 0; --background: transparent;">
+        <ion-label>
+          <p style="font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Fecha de nacimiento</p>
+          <h3 style="font-size: 14px; font-weight: 600; color: #475569; margin-top: 4px;">{{ fechaNacimiento }}</h3>
+        </ion-label>
+      </ion-item>
+
+      <ion-item lines="none" style="--padding-start: 0; --background: transparent;">
+        <ion-label>
+          <p style="font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Sexo de registro</p>
+          <h3 style="font-size: 14px; font-weight: 600; color: #475569; margin-top: 4px;">
+            {{ usuario?.sexo === 'M' ? 'Masculino' : (usuario?.sexo === 'F' ? 'Femenino' : 'Otro') }}
+          </h3>
+        </ion-label>
+      </ion-item>
+    </div>
+  </div>
+</ion-content>

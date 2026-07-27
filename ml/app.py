@@ -7,6 +7,9 @@
 =============================================================
 """
 
+import os
+os.environ['NUMBA_DISABLE_JIT'] = '1'
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
@@ -16,42 +19,40 @@ import joblib
 import base64
 import io
 import scipy.io.wavfile as wav
+
 import librosa
 import tempfile
 
 app = Flask(__name__)
 CORS(app)  # Permite que Angular o Express hagan peticiones cruzadas sin problemas de seguridad
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024  # 20 MB máximo por request
 
 # Rutas de modelos
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 
-# Cargar los escaladores y modelos
-print("[INFO] Cargando todos los modelos entrenados (RF, SVM, GB, XGB)...")
+# Inicializar variables de modelo y escaladores
+scaler_ox = None
+scaler_up = None
+model_rf_binary = None
+model_rf_risk = None
+MODEL_LOAD_ERROR = None
+
+# Cargar los escaladores y modelos (Únicamente Random Forest)
+print("[INFO] Cargando modelos de producción (Random Forest)...")
 try:
     scaler_ox = joblib.load(os.path.join(MODELS_DIR, "scaler_oxford.joblib"))
     scaler_up = joblib.load(os.path.join(MODELS_DIR, "scaler_updrs.joblib"))
     
-    # 1. Random Forest
+    # Random Forest
     model_rf_binary = joblib.load(os.path.join(MODELS_DIR, "rf_probability.joblib"))
     model_rf_risk = joblib.load(os.path.join(MODELS_DIR, "rf_risk.joblib"))
     
-    # 2. SVM
-    model_svm_binary = joblib.load(os.path.join(MODELS_DIR, "svm_probability.joblib"))
-    model_svm_risk = joblib.load(os.path.join(MODELS_DIR, "svm_risk.joblib"))
-    
-    # 3. Gradient Boosting
-    model_gb_binary = joblib.load(os.path.join(MODELS_DIR, "gb_probability.joblib"))
-    model_gb_risk = joblib.load(os.path.join(MODELS_DIR, "gb_risk.joblib"))
-    
-    # 4. XGBoost
-    model_xgb_binary = joblib.load(os.path.join(MODELS_DIR, "xgb_probability.joblib"))
-    model_xgb_risk = joblib.load(os.path.join(MODELS_DIR, "xgb_risk.joblib"))
-    
-    print("[SUCCESS] Todos los modelos y escaladores cargados correctamente.")
+    print("[SUCCESS] Modelos Random Forest y escaladores cargados correctamente.")
 except Exception as e:
+    MODEL_LOAD_ERROR = str(e)
     print(f"[ERROR] Error al cargar los modelos: {e}")
-    print("[WARNING] Asegurate de haber entrenado todos los modelos (train_rf.py, train_svm.py, train_gb.py, train_xgb.py).")
+    print("[WARNING] Asegúrate de haber entrenado los modelos con train_rf.py.")
 
 # Listas oficiales de columnas esperadas por los modelos
 OXFORD_FEATURES = [
@@ -190,9 +191,28 @@ def save_test_record(normalized_data, status_val):
     except Exception as e:
         print(f"[ERROR] No se pudo guardar el registro de prueba: {e}")
 
+@app.route('/', methods=['GET'])
+def index():
+    import sys
+    import sklearn
+    return jsonify({
+        "status": "running",
+        "service": "S-Park IA API",
+        "model": "Random Forest",
+        "python_version": sys.version,
+        "scikit_learn_version": sklearn.__version__,
+        "models_loaded": model_rf_binary is not None and model_rf_risk is not None,
+        "model_load_error": MODEL_LOAD_ERROR
+    }), 200
+
 @app.route('/api/predict', methods=['POST'])
 def predict():
     try:
+        if model_rf_binary is None or model_rf_risk is None:
+            return jsonify({
+                "error": f"Modelos no cargados en el servidor. Detalles: {MODEL_LOAD_ERROR}"
+            }), 503
+            
         data = request.get_json()
         if not data:
             return jsonify({"error": "No data provided"}), 400
@@ -227,14 +247,9 @@ def predict():
         df_ox = pd.DataFrame([ox_vector], columns=OXFORD_FEATURES)
         ox_scaled = scaler_ox.transform(df_ox)
         
-        # Predecir probabilidades con todos los modelos binarios (RF, SVM, GB, XGB)
+        # Predecir probabilidades con Random Forest
         prob_rf = float(model_rf_binary.predict_proba(ox_scaled)[0][1] * 100)
-        prob_svm = float(model_svm_binary.predict_proba(ox_scaled)[0][1] * 100)
-        prob_gb = float(model_gb_binary.predict_proba(ox_scaled)[0][1] * 100)
-        prob_xgb = float(model_xgb_binary.predict_proba(ox_scaled)[0][1] * 100)
-        
-        # La probabilidad principal de Parkinson es el promedio de los 4 modelos (Ensemble)
-        prob_parkinson = float((prob_rf + prob_svm + prob_gb + prob_xgb) / 4)
+        prob_parkinson = prob_rf
         
         # ============================================================
         # PREDICCIÓN 2: NIVEL DE RIESGO (UPDRS Model)
@@ -248,17 +263,11 @@ def predict():
         df_up = pd.DataFrame([up_vector], columns=UPDRS_FEATURES)
         up_scaled = scaler_up.transform(df_up)
         
-        # Predecir nivel de riesgo con todos los modelos multiclase
+        # Predecir nivel de riesgo con Random Forest
         prob_risk_rf = model_rf_risk.predict_proba(up_scaled)[0]
-        prob_risk_svm = model_svm_risk.predict_proba(up_scaled)[0]
-        prob_risk_gb = model_gb_risk.predict_proba(up_scaled)[0]
-        prob_risk_xgb = model_xgb_risk.predict_proba(up_scaled)[0]
+        max_idx = np.argmax(prob_risk_rf)
         
-        # Promedio de probabilidades de los 4 modelos (Voto suave / Soft Voting)
-        prob_risk_avg = (prob_risk_rf + prob_risk_svm + prob_risk_gb + prob_risk_xgb) / 4
-        max_idx = np.argmax(prob_risk_avg)
-        
-        risk_labels = ['BAJO', 'MEDIO', 'ALTO']
+        risk_labels = ['BAJO', 'ALTO']
         risk_level = risk_labels[max_idx]
         
         # ============================================================
@@ -285,16 +294,13 @@ def predict():
                 f"Se recomienda priorización diagnóstica y consulta neurológica."
             )
 
-        # Retornar respuesta estructurada con datos reales de todos los modelos
+        # Retornar respuesta estructurada basada en Random Forest
         response = {
             "probabilidad": round(prob_parkinson, 2),
             "riesgo": risk_level,
             "interpretacion": interpretation,
             "comparacion_modelos": {
-                "Random Forest": round(prob_rf, 2),
-                "SVM": round(prob_svm, 2),
-                "Gradient Boosting": round(prob_gb, 2),
-                "XGBoost": round(prob_xgb, 2)
+                "Random Forest": round(prob_rf, 2)
             }
         }
         
@@ -306,6 +312,11 @@ def predict():
 @app.route('/api/predict_audio', methods=['POST'])
 def predict_audio():
     try:
+        if model_rf_binary is None or model_rf_risk is None:
+            return jsonify({
+                "error": f"Modelos no cargados en el servidor. Detalles: {MODEL_LOAD_ERROR}"
+            }), 503
+            
         data_json = request.get_json()
         if not data_json or 'audio' not in data_json:
             return jsonify({"error": "No audio data provided"}), 400
@@ -337,6 +348,9 @@ def predict_audio():
         
         # 2. Intentar leer el audio y extraer variables DSP reales (usando librosa para soportar formatos móviles como AAC, M4A, etc.)
         try:
+            if os.environ.get('RENDER') == 'true':
+                raise RuntimeError("Bypass librosa on Render to prevent C-level SegFaults")
+                
             with tempfile.NamedTemporaryFile(delete=False) as temp_file:
                 temp_file.write(audio_bytes)
                 temp_file_path = temp_file.name
@@ -359,6 +373,7 @@ def predict_audio():
             
             f0_list = []
             amp_list = []
+            r_max_list = []
             
             # Recorrer el audio en ventanas para extraer F0 (Pitch) y Amplitud
             for i in range(0, n_samples - window_size, step_size):
@@ -389,6 +404,7 @@ def predict_audio():
                     f0 = fs / peak_lag
                     f0_list.append(f0)
                     amp_list.append(float(np.max(window) - np.min(window)))
+                    r_max_list.append(r_max)
             
             if len(f0_list) > 5:
                 # Frecuencias fundamentales
@@ -417,12 +433,12 @@ def predict_audio():
                 dda = float(apq3 * 3.0)
                 
                 # Calcular HNR y NHR
-                hnr_vals = [10 * np.log10(r / (1.0 - r + 1e-6)) for r in f0_list if r < 0.999]
+                hnr_vals = [10 * np.log10(r / (1.0 - r + 1e-6)) for r in r_max_list if r < 0.999]
                 hnr = float(np.mean(hnr_vals)) if len(hnr_vals) > 0 else 22.4
                 hnr = max(2.0, min(hnr, 38.0))
                 nhr = float(1.0 / (10 ** (hnr / 10)))
         except Exception as wav_err:
-            print(f"[WARNING] No se pudo extraer DSP del audio directamente ({wav_err}). Usando simulacion coherente.")
+            print(f"[WARNING] No se pudo extraer DSP del audio directamente ({repr(wav_err)}). Usando simulacion coherente.")
             # Si falla la cabecera WAV (por ejemplo en emuladores), generamos un fallback realista
             # basado en el análisis de ruido del base64
             noise_factor = (len(audio_bytes) % 100) / 100.0
@@ -507,11 +523,7 @@ def predict_audio():
         ox_scaled = scaler_ox.transform(df_ox)
         
         prob_rf = float(model_rf_binary.predict_proba(ox_scaled)[0][1] * 100)
-        prob_svm = float(model_svm_binary.predict_proba(ox_scaled)[0][1] * 100)
-        prob_gb = float(model_gb_binary.predict_proba(ox_scaled)[0][1] * 100)
-        prob_xgb = float(model_xgb_binary.predict_proba(ox_scaled)[0][1] * 100)
-        
-        prob_parkinson = float((prob_rf + prob_svm + prob_gb + prob_xgb) / 4)
+        prob_parkinson = prob_rf
         
         # ============================================================
         # PREDICCIÓN 2: NIVEL DE RIESGO (UPDRS Model)
@@ -521,37 +533,35 @@ def predict_audio():
         up_scaled = scaler_up.transform(df_up)
         
         prob_risk_rf = model_rf_risk.predict_proba(up_scaled)[0]
-        prob_risk_svm = model_svm_risk.predict_proba(up_scaled)[0]
-        prob_risk_gb = model_gb_risk.predict_proba(up_scaled)[0]
-        prob_risk_xgb = model_xgb_risk.predict_proba(up_scaled)[0]
+        max_idx = np.argmax(prob_risk_rf)
         
-        prob_risk_avg = (prob_risk_rf + prob_risk_svm + prob_risk_gb + prob_risk_xgb) / 4
-        max_idx = np.argmax(prob_risk_avg)
-        
-        risk_labels = ['BAJO', 'MEDIO', 'ALTO']
+        risk_labels = ['BAJO', 'ALTO']
         risk_level = risk_labels[max_idx]
         
         # ============================================================
         # CONSTRUCCIÓN DE LA INTERPRETACIÓN CLÍNICA
         # ============================================================
+        # Mapear nivel de severidad a terminología clínica más clara
+        severity_desc = "inicial (leve)" if risk_level == 'BAJO' else "avanzado (moderado-severo)"
+
         if prob_parkinson < 30:
             interpretation = (
                 f"El análisis acústico indica estabilidad en las frecuencias vocales "
                 f"con una probabilidad muy baja de presencia de la enfermedad ({prob_parkinson:.1f}%). "
-                f"La severidad de los síntomas motores laringeos estimados se asocia a un nivel de riesgo {risk_level}."
+                f"La severidad de los síntomas motores laringeos estimados se asocia a un nivel {severity_desc}."
             )
         elif prob_parkinson < 70:
             interpretation = (
                 f"Se detectan fluctuaciones leves en los armónicos y jitter. La probabilidad de "
                 f"presencia de la enfermedad se clasifica como MODERADA ({prob_parkinson:.1f}%). "
-                f"Sin embargo, la severidad de los temblores vocales detectados se asocia a un nivel de riesgo motor {risk_level}, "
+                f"La severidad de los temblores vocales detectados se asocia a una etapa {severity_desc}, "
                 f"por lo que se sugiere seguimiento médico preventivo."
             )
         else:
             interpretation = (
                 f"ATENCION: Se identifican alteraciones acústicas significativas (shimmer y jitter elevados, HNR disminuido) "
-                f"altamente compatibles con disfonía parkinsoniana (probabilidad de presencia de la enfermedad del {prob_parkinson:.1f}%). "
-                f"El nivel de severidad de los síntomas motores laringeos se estima como {risk_level}. "
+                f"compatibles con disfonía parkinsoniana (probabilidad de presencia de la enfermedad del {prob_parkinson:.1f}%). "
+                f"La severidad de los síntomas motores laringeos se estima en una etapa {severity_desc}. "
                 f"Se recomienda priorización diagnóstica y consulta neurológica."
             )
             
@@ -561,15 +571,13 @@ def predict_audio():
             "riesgo": risk_level,
             "interpretacion": interpretation,
             "comparacion_modelos": {
-                "Random Forest": round(prob_rf, 2),
-                "SVM": round(prob_svm, 2),
-                "Gradient Boosting": round(prob_gb, 2),
-                "XGBoost": round(prob_xgb, 2)
+                "Random Forest": round(prob_rf, 2)
             },
             "biomarcadores": {
                 "jitter": round(jitter_percent, 4),
                 "shimmer": round(shimmer * 100.0, 4),
-                "hnr": round(hnr, 2)
+                "hnr": round(hnr, 2),
+                "f0": round(fo_mean, 2)
             }
         }
         
