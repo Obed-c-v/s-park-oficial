@@ -5,9 +5,9 @@
 export const environment = {
   production: true,
   // Backend principal S-Park (Express en Render)
-  apiUrl: 'https://spark-backend-8zi1.onrender.com/api',
+  apiUrl: 'https://spark-backend-sk78.onrender.com/api',
   // Backend simple (sin uso en producción, apunta al mismo servidor)
-  apiUrlSimple: 'https://spark-backend-8zi1.onrender.com/api',
+  apiUrlSimple: 'https://spark-backend-sk78.onrender.com/api',
 
   // 🔥 CONFIG FIREBASE
   firebaseConfig: {

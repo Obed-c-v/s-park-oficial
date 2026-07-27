@@ -4,9 +4,9 @@
 export const environment = {
   production: false,
   // Backend principal S-Park (Express con BD PostgreSQL completa)
-  apiUrl: 'https://spark-backend-8zi1.onrender.com/api',
+  apiUrl: 'https://spark-backend-sk78.onrender.com/api',
   // Backend simple del proyecto (auth básica simulada)
-  apiUrlSimple: 'https://spark-backend-8zi1.onrender.com/api',
+  apiUrlSimple: 'https://spark-backend-sk78.onrender.com/api',
 
   // 🔥 CONFIG FIREBASE (sin uso activo por ahora)
   firebaseConfig: {

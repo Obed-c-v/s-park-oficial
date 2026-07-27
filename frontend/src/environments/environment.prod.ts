@@ -4,6 +4,6 @@
  */
 export const environment = {
   production: true,
-  apiUrl: 'https://spark-backend-8zi1.onrender.com/api',
-  serverUrl: 'https://spark-backend-8zi1.onrender.com',
+  apiUrl: 'https://spark-backend-sk78.onrender.com/api',
+  serverUrl: 'https://spark-backend-sk78.onrender.com',
 };
