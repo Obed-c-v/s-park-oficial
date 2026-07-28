@@ -41,7 +41,7 @@ services:
   - type: web
     name: spark-frontend
     runtime: static
-    buildCommand: npm install && npx ng build
+    buildCommand: npm install --legacy-peer-deps && npx ng build
     staticPublishPath: ./dist/S-park
     rootDir: frontend
     envVars:
