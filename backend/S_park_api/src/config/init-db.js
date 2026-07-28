@@ -5,17 +5,36 @@ const { hashPassword } = require('../utils/hash');
 
 async function initDb() {
   console.log('🔍 [DB INIT] Comprobando integridad de la base de datos...');
+  const forceReset = process.env.FORCE_DB_RESET === 'true';
+
+  if (forceReset) {
+    console.log('⚠️  [DB INIT] FORCE_DB_RESET=true detectado. Reiniciando base de datos completa...');
+  }
+
   try {
-    // 1. Verificar si existe la tabla 'usuarios' para determinar si la base de datos está vacía
+    // 1. Verificar si existe la tabla 'usuarios' (omitir si se fuerza reset)
     const tableCheck = await query(`
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public' AND table_name = 'usuarios'
     `);
 
-    if (tableCheck.rows.length > 0) {
+    if (tableCheck.rows.length > 0 && !forceReset) {
       console.log('✨ [DB INIT] La base de datos ya cuenta con la estructura básica. Omitiendo restauración.');
       return;
+    }
+
+    // Si hay tablas existentes y se forzó reset, eliminar todo primero
+    if (tableCheck.rows.length > 0 && forceReset) {
+      console.log('🗑️  [DB INIT] Eliminando tablas existentes para reimportación limpia...');
+      await query(`
+        DROP TABLE IF EXISTS
+          registros_biomarcador, notas_clinicas, paciente_ejercicio,
+          expedientes, citas, pacientes, medicos,
+          usuario_rol, usuarios, roles, ejercicios, biomarcadores
+        CASCADE;
+      `);
+      console.log('✅ [DB INIT] Tablas eliminadas correctamente.');
     }
 
     console.log('🚀 [DB INIT] Base de datos vacía detectada. Iniciando restauración automática...');
