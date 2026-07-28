@@ -44,7 +44,6 @@ services:
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist/S-park/browser
     rootDir: frontend
-    plan: free
 
 databases:
   # 4. PostgreSQL Database
