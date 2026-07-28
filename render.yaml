@@ -37,9 +37,9 @@ services:
       - key: JWT_SECRET
         generateValue: true
 
+statics:
   # 3. Angular Static Frontend (Panel Administrativo)
-  - type: static
-    name: spark-frontend
+  - name: spark-frontend
     buildCommand: npm install && npm run build
     publishDir: dist/S-park/browser
     rootDir: frontend
