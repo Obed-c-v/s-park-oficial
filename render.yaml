@@ -42,7 +42,7 @@ services:
     name: spark-frontend
     runtime: static
     buildCommand: npm install && npx ng build
-    staticPublishPath: ./dist/S-park/browser
+    staticPublishPath: ./dist/S-park
     rootDir: frontend
     envVars:
       - key: NODE_VERSION
