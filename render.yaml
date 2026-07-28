@@ -37,7 +37,15 @@ services:
       - key: JWT_SECRET
         generateValue: true
 
+  # 3. Angular Static Frontend (Panel Administrativo)
+  - type: static
+    name: spark-frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist/S-park/browser
+    rootDir: frontend
+    plan: free
+
 databases:
-  # 3. PostgreSQL Database
+  # 4. PostgreSQL Database
   - name: spark-db
     plan: free
