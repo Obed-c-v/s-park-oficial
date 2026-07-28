@@ -21,7 +21,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: biomarcadores; Type: TABLE; Schema: public; Owner: postgres
+-- Name: biomarcadores; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.biomarcadores (
@@ -33,10 +33,8 @@ CREATE TABLE public.biomarcadores (
 );
 
 
-ALTER TABLE public.biomarcadores OWNER TO postgres;
-
 --
--- Name: biomarcadores_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: biomarcadores_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.biomarcadores_id_seq
@@ -48,17 +46,15 @@ CREATE SEQUENCE public.biomarcadores_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.biomarcadores_id_seq OWNER TO postgres;
-
 --
--- Name: biomarcadores_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: biomarcadores_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.biomarcadores_id_seq OWNED BY public.biomarcadores.id;
 
 
 --
--- Name: citas; Type: TABLE; Schema: public; Owner: postgres
+-- Name: citas; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.citas (
@@ -72,10 +68,8 @@ CREATE TABLE public.citas (
 );
 
 
-ALTER TABLE public.citas OWNER TO postgres;
-
 --
--- Name: citas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: citas_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.citas_id_seq
@@ -87,17 +81,15 @@ CREATE SEQUENCE public.citas_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.citas_id_seq OWNER TO postgres;
-
 --
--- Name: citas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: citas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.citas_id_seq OWNED BY public.citas.id;
 
 
 --
--- Name: ejercicios; Type: TABLE; Schema: public; Owner: postgres
+-- Name: ejercicios; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.ejercicios (
@@ -110,10 +102,8 @@ CREATE TABLE public.ejercicios (
 );
 
 
-ALTER TABLE public.ejercicios OWNER TO postgres;
-
 --
--- Name: ejercicios_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: ejercicios_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.ejercicios_id_seq
@@ -125,17 +115,15 @@ CREATE SEQUENCE public.ejercicios_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.ejercicios_id_seq OWNER TO postgres;
-
 --
--- Name: ejercicios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: ejercicios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.ejercicios_id_seq OWNED BY public.ejercicios.id;
 
 
 --
--- Name: expedientes; Type: TABLE; Schema: public; Owner: postgres
+-- Name: expedientes; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.expedientes (
@@ -149,10 +137,8 @@ CREATE TABLE public.expedientes (
 );
 
 
-ALTER TABLE public.expedientes OWNER TO postgres;
-
 --
--- Name: expedientes_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: expedientes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.expedientes_id_seq
@@ -164,17 +150,15 @@ CREATE SEQUENCE public.expedientes_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.expedientes_id_seq OWNER TO postgres;
-
 --
--- Name: expedientes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: expedientes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.expedientes_id_seq OWNED BY public.expedientes.id;
 
 
 --
--- Name: medicos; Type: TABLE; Schema: public; Owner: postgres
+-- Name: medicos; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.medicos (
@@ -192,10 +176,8 @@ CREATE TABLE public.medicos (
 );
 
 
-ALTER TABLE public.medicos OWNER TO postgres;
-
 --
--- Name: medicos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: medicos_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.medicos_id_seq
@@ -207,17 +189,15 @@ CREATE SEQUENCE public.medicos_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.medicos_id_seq OWNER TO postgres;
-
 --
--- Name: medicos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: medicos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.medicos_id_seq OWNED BY public.medicos.id;
 
 
 --
--- Name: notas_clinicas; Type: TABLE; Schema: public; Owner: postgres
+-- Name: notas_clinicas; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.notas_clinicas (
@@ -230,10 +210,8 @@ CREATE TABLE public.notas_clinicas (
 );
 
 
-ALTER TABLE public.notas_clinicas OWNER TO postgres;
-
 --
--- Name: notas_clinicas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: notas_clinicas_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.notas_clinicas_id_seq
@@ -245,17 +223,15 @@ CREATE SEQUENCE public.notas_clinicas_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.notas_clinicas_id_seq OWNER TO postgres;
-
 --
--- Name: notas_clinicas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: notas_clinicas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.notas_clinicas_id_seq OWNED BY public.notas_clinicas.id;
 
 
 --
--- Name: paciente_ejercicio; Type: TABLE; Schema: public; Owner: postgres
+-- Name: paciente_ejercicio; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.paciente_ejercicio (
@@ -268,10 +244,8 @@ CREATE TABLE public.paciente_ejercicio (
 );
 
 
-ALTER TABLE public.paciente_ejercicio OWNER TO postgres;
-
 --
--- Name: paciente_ejercicio_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: paciente_ejercicio_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.paciente_ejercicio_id_seq
@@ -283,17 +257,15 @@ CREATE SEQUENCE public.paciente_ejercicio_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.paciente_ejercicio_id_seq OWNER TO postgres;
-
 --
--- Name: paciente_ejercicio_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: paciente_ejercicio_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.paciente_ejercicio_id_seq OWNED BY public.paciente_ejercicio.id;
 
 
 --
--- Name: pacientes; Type: TABLE; Schema: public; Owner: postgres
+-- Name: pacientes; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.pacientes (
@@ -314,10 +286,8 @@ CREATE TABLE public.pacientes (
 );
 
 
-ALTER TABLE public.pacientes OWNER TO postgres;
-
 --
--- Name: pacientes_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: pacientes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.pacientes_id_seq
@@ -329,17 +299,15 @@ CREATE SEQUENCE public.pacientes_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.pacientes_id_seq OWNER TO postgres;
-
 --
--- Name: pacientes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: pacientes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.pacientes_id_seq OWNED BY public.pacientes.id;
 
 
 --
--- Name: registros_biomarcador; Type: TABLE; Schema: public; Owner: postgres
+-- Name: registros_biomarcador; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.registros_biomarcador (
@@ -353,10 +321,8 @@ CREATE TABLE public.registros_biomarcador (
 );
 
 
-ALTER TABLE public.registros_biomarcador OWNER TO postgres;
-
 --
--- Name: registros_biomarcador_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: registros_biomarcador_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.registros_biomarcador_id_seq
@@ -368,17 +334,15 @@ CREATE SEQUENCE public.registros_biomarcador_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.registros_biomarcador_id_seq OWNER TO postgres;
-
 --
--- Name: registros_biomarcador_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: registros_biomarcador_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.registros_biomarcador_id_seq OWNED BY public.registros_biomarcador.id;
 
 
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: postgres
+-- Name: roles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.roles (
@@ -387,10 +351,8 @@ CREATE TABLE public.roles (
 );
 
 
-ALTER TABLE public.roles OWNER TO postgres;
-
 --
--- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.roles_id_seq
@@ -402,17 +364,15 @@ CREATE SEQUENCE public.roles_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.roles_id_seq OWNER TO postgres;
-
 --
--- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.roles_id_seq OWNED BY public.roles.id;
 
 
 --
--- Name: usuario_rol; Type: TABLE; Schema: public; Owner: postgres
+-- Name: usuario_rol; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.usuario_rol (
@@ -421,10 +381,8 @@ CREATE TABLE public.usuario_rol (
 );
 
 
-ALTER TABLE public.usuario_rol OWNER TO postgres;
-
 --
--- Name: usuarios; Type: TABLE; Schema: public; Owner: postgres
+-- Name: usuarios; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.usuarios (
@@ -443,10 +401,8 @@ CREATE TABLE public.usuarios (
 );
 
 
-ALTER TABLE public.usuarios OWNER TO postgres;
-
 --
--- Name: usuarios_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: usuarios_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.usuarios_id_seq
@@ -458,94 +414,92 @@ CREATE SEQUENCE public.usuarios_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.usuarios_id_seq OWNER TO postgres;
-
 --
--- Name: usuarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: usuarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.usuarios_id_seq OWNED BY public.usuarios.id;
 
 
 --
--- Name: biomarcadores id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: biomarcadores id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.biomarcadores ALTER COLUMN id SET DEFAULT nextval('public.biomarcadores_id_seq'::regclass);
 
 
 --
--- Name: citas id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: citas id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.citas ALTER COLUMN id SET DEFAULT nextval('public.citas_id_seq'::regclass);
 
 
 --
--- Name: ejercicios id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: ejercicios id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ejercicios ALTER COLUMN id SET DEFAULT nextval('public.ejercicios_id_seq'::regclass);
 
 
 --
--- Name: expedientes id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: expedientes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.expedientes ALTER COLUMN id SET DEFAULT nextval('public.expedientes_id_seq'::regclass);
 
 
 --
--- Name: medicos id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: medicos id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.medicos ALTER COLUMN id SET DEFAULT nextval('public.medicos_id_seq'::regclass);
 
 
 --
--- Name: notas_clinicas id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: notas_clinicas id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notas_clinicas ALTER COLUMN id SET DEFAULT nextval('public.notas_clinicas_id_seq'::regclass);
 
 
 --
--- Name: paciente_ejercicio id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: paciente_ejercicio id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.paciente_ejercicio ALTER COLUMN id SET DEFAULT nextval('public.paciente_ejercicio_id_seq'::regclass);
 
 
 --
--- Name: pacientes id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: pacientes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.pacientes ALTER COLUMN id SET DEFAULT nextval('public.pacientes_id_seq'::regclass);
 
 
 --
--- Name: registros_biomarcador id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: registros_biomarcador id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.registros_biomarcador ALTER COLUMN id SET DEFAULT nextval('public.registros_biomarcador_id_seq'::regclass);
 
 
 --
--- Name: roles id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: roles id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.roles_id_seq'::regclass);
 
 
 --
--- Name: usuarios id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: usuarios id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.usuarios ALTER COLUMN id SET DEFAULT nextval('public.usuarios_id_seq'::regclass);
 
 
 --
--- Data for Name: biomarcadores; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: biomarcadores; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.biomarcadores (id, nombre, unidad, rango_min, rango_max) FROM stdin;
@@ -556,7 +510,7 @@ COPY public.biomarcadores (id, nombre, unidad, rango_min, rango_max) FROM stdin;
 
 
 --
--- Data for Name: citas; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: citas; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.citas (id, paciente_id, medico_id, fecha_hora, estado, created_at, updated_at) FROM stdin;
@@ -568,7 +522,7 @@ COPY public.citas (id, paciente_id, medico_id, fecha_hora, estado, created_at, u
 
 
 --
--- Data for Name: ejercicios; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: ejercicios; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.ejercicios (id, nombre, descripcion, nivel, created_at, updated_at) FROM stdin;
@@ -579,7 +533,7 @@ COPY public.ejercicios (id, nombre, descripcion, nivel, created_at, updated_at) 
 
 
 --
--- Data for Name: expedientes; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: expedientes; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.expedientes (id, paciente_id, medico_responsable_id, fecha_apertura, estado, created_at, updated_at) FROM stdin;
@@ -616,7 +570,7 @@ COPY public.expedientes (id, paciente_id, medico_responsable_id, fecha_apertura,
 
 
 --
--- Data for Name: medicos; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: medicos; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.medicos (id, usuario_id, nombre, apellido, numero_licencia, especialidad, telefono, activo, created_at, updated_at, foto_url) FROM stdin;
@@ -638,7 +592,7 @@ COPY public.medicos (id, usuario_id, nombre, apellido, numero_licencia, especial
 
 
 --
--- Data for Name: notas_clinicas; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: notas_clinicas; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.notas_clinicas (id, expediente_id, medico_id, tipo, contenido, created_at) FROM stdin;
@@ -667,7 +621,7 @@ COPY public.notas_clinicas (id, expediente_id, medico_id, tipo, contenido, creat
 
 
 --
--- Data for Name: paciente_ejercicio; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: paciente_ejercicio; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.paciente_ejercicio (id, paciente_id, medico_id, ejercicio_id, fecha_asignacion, estado) FROM stdin;
@@ -675,7 +629,7 @@ COPY public.paciente_ejercicio (id, paciente_id, medico_id, ejercicio_id, fecha_
 
 
 --
--- Data for Name: pacientes; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: pacientes; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.pacientes (id, usuario_id, nombre, apellido, fecha_nacimiento, sexo, telefono, email, created_at, updated_at, racha_dias, puntos_bienestar, alergias, recetas) FROM stdin;
@@ -712,7 +666,7 @@ COPY public.pacientes (id, usuario_id, nombre, apellido, fecha_nacimiento, sexo,
 
 
 --
--- Data for Name: registros_biomarcador; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: registros_biomarcador; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.registros_biomarcador (id, paciente_id, medico_id, biomarcador_id, valor, fecha_registro, resultado_ia) FROM stdin;
@@ -750,7 +704,7 @@ COPY public.registros_biomarcador (id, paciente_id, medico_id, biomarcador_id, v
 
 
 --
--- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.roles (id, nombre) FROM stdin;
@@ -761,7 +715,7 @@ COPY public.roles (id, nombre) FROM stdin;
 
 
 --
--- Data for Name: usuario_rol; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: usuario_rol; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.usuario_rol (usuario_id, rol_id) FROM stdin;
@@ -817,7 +771,7 @@ COPY public.usuario_rol (usuario_id, rol_id) FROM stdin;
 
 
 --
--- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.usuarios (id, email, password_hash, activo, created_at, updated_at, foto_url, email_verificado, codigo_activacion, codigo_expiracion, ultimo_login, primer_acceso) FROM stdin;
@@ -873,84 +827,84 @@ COPY public.usuarios (id, email, password_hash, activo, created_at, updated_at, 
 
 
 --
--- Name: biomarcadores_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: biomarcadores_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.biomarcadores_id_seq', 1, false);
 
 
 --
--- Name: citas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: citas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.citas_id_seq', 4, true);
 
 
 --
--- Name: ejercicios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: ejercicios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.ejercicios_id_seq', 3, true);
 
 
 --
--- Name: expedientes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: expedientes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.expedientes_id_seq', 37, true);
 
 
 --
--- Name: medicos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: medicos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.medicos_id_seq', 15, true);
 
 
 --
--- Name: notas_clinicas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: notas_clinicas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.notas_clinicas_id_seq', 30, true);
 
 
 --
--- Name: paciente_ejercicio_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: paciente_ejercicio_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.paciente_ejercicio_id_seq', 1, false);
 
 
 --
--- Name: pacientes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: pacientes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.pacientes_id_seq', 37, true);
 
 
 --
--- Name: registros_biomarcador_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: registros_biomarcador_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.registros_biomarcador_id_seq', 33, true);
 
 
 --
--- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.roles_id_seq', 3, true);
 
 
 --
--- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.usuarios_id_seq', 62, true);
 
 
 --
--- Name: biomarcadores biomarcadores_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: biomarcadores biomarcadores_nombre_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.biomarcadores
@@ -958,7 +912,7 @@ ALTER TABLE ONLY public.biomarcadores
 
 
 --
--- Name: biomarcadores biomarcadores_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: biomarcadores biomarcadores_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.biomarcadores
@@ -966,7 +920,7 @@ ALTER TABLE ONLY public.biomarcadores
 
 
 --
--- Name: citas citas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: citas citas_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.citas
@@ -974,7 +928,7 @@ ALTER TABLE ONLY public.citas
 
 
 --
--- Name: ejercicios ejercicios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: ejercicios ejercicios_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ejercicios
@@ -982,7 +936,7 @@ ALTER TABLE ONLY public.ejercicios
 
 
 --
--- Name: expedientes expedientes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: expedientes expedientes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.expedientes
@@ -990,7 +944,7 @@ ALTER TABLE ONLY public.expedientes
 
 
 --
--- Name: medicos medicos_numero_licencia_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: medicos medicos_numero_licencia_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.medicos
@@ -998,7 +952,7 @@ ALTER TABLE ONLY public.medicos
 
 
 --
--- Name: medicos medicos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: medicos medicos_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.medicos
@@ -1006,7 +960,7 @@ ALTER TABLE ONLY public.medicos
 
 
 --
--- Name: medicos medicos_usuario_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: medicos medicos_usuario_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.medicos
@@ -1014,7 +968,7 @@ ALTER TABLE ONLY public.medicos
 
 
 --
--- Name: notas_clinicas notas_clinicas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: notas_clinicas notas_clinicas_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notas_clinicas
@@ -1022,7 +976,7 @@ ALTER TABLE ONLY public.notas_clinicas
 
 
 --
--- Name: paciente_ejercicio paciente_ejercicio_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: paciente_ejercicio paciente_ejercicio_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.paciente_ejercicio
@@ -1030,7 +984,7 @@ ALTER TABLE ONLY public.paciente_ejercicio
 
 
 --
--- Name: pacientes pacientes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: pacientes pacientes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.pacientes
@@ -1038,7 +992,7 @@ ALTER TABLE ONLY public.pacientes
 
 
 --
--- Name: pacientes pacientes_usuario_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: pacientes pacientes_usuario_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.pacientes
@@ -1046,7 +1000,7 @@ ALTER TABLE ONLY public.pacientes
 
 
 --
--- Name: registros_biomarcador registros_biomarcador_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: registros_biomarcador registros_biomarcador_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.registros_biomarcador
@@ -1054,7 +1008,7 @@ ALTER TABLE ONLY public.registros_biomarcador
 
 
 --
--- Name: roles roles_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: roles roles_nombre_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.roles
@@ -1062,7 +1016,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.roles
@@ -1070,7 +1024,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- Name: usuario_rol usuario_rol_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: usuario_rol usuario_rol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.usuario_rol
@@ -1078,7 +1032,7 @@ ALTER TABLE ONLY public.usuario_rol
 
 
 --
--- Name: usuarios usuarios_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: usuarios usuarios_email_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.usuarios
@@ -1086,7 +1040,7 @@ ALTER TABLE ONLY public.usuarios
 
 
 --
--- Name: usuarios usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: usuarios usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.usuarios
@@ -1094,7 +1048,7 @@ ALTER TABLE ONLY public.usuarios
 
 
 --
--- Name: citas citas_medico_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: citas citas_medico_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.citas
@@ -1102,7 +1056,7 @@ ALTER TABLE ONLY public.citas
 
 
 --
--- Name: citas citas_paciente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: citas citas_paciente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.citas
@@ -1110,7 +1064,7 @@ ALTER TABLE ONLY public.citas
 
 
 --
--- Name: expedientes expedientes_medico_responsable_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: expedientes expedientes_medico_responsable_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.expedientes
@@ -1118,7 +1072,7 @@ ALTER TABLE ONLY public.expedientes
 
 
 --
--- Name: expedientes expedientes_paciente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: expedientes expedientes_paciente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.expedientes
@@ -1126,7 +1080,7 @@ ALTER TABLE ONLY public.expedientes
 
 
 --
--- Name: medicos medicos_usuario_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: medicos medicos_usuario_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.medicos
@@ -1134,7 +1088,7 @@ ALTER TABLE ONLY public.medicos
 
 
 --
--- Name: notas_clinicas notas_clinicas_expediente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: notas_clinicas notas_clinicas_expediente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notas_clinicas
@@ -1142,7 +1096,7 @@ ALTER TABLE ONLY public.notas_clinicas
 
 
 --
--- Name: notas_clinicas notas_clinicas_medico_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: notas_clinicas notas_clinicas_medico_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notas_clinicas
@@ -1150,7 +1104,7 @@ ALTER TABLE ONLY public.notas_clinicas
 
 
 --
--- Name: paciente_ejercicio paciente_ejercicio_ejercicio_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: paciente_ejercicio paciente_ejercicio_ejercicio_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.paciente_ejercicio
@@ -1158,7 +1112,7 @@ ALTER TABLE ONLY public.paciente_ejercicio
 
 
 --
--- Name: paciente_ejercicio paciente_ejercicio_medico_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: paciente_ejercicio paciente_ejercicio_medico_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.paciente_ejercicio
@@ -1166,7 +1120,7 @@ ALTER TABLE ONLY public.paciente_ejercicio
 
 
 --
--- Name: paciente_ejercicio paciente_ejercicio_paciente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: paciente_ejercicio paciente_ejercicio_paciente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.paciente_ejercicio
@@ -1174,7 +1128,7 @@ ALTER TABLE ONLY public.paciente_ejercicio
 
 
 --
--- Name: pacientes pacientes_usuario_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: pacientes pacientes_usuario_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.pacientes
@@ -1182,7 +1136,7 @@ ALTER TABLE ONLY public.pacientes
 
 
 --
--- Name: registros_biomarcador registros_biomarcador_biomarcador_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: registros_biomarcador registros_biomarcador_biomarcador_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.registros_biomarcador
@@ -1190,7 +1144,7 @@ ALTER TABLE ONLY public.registros_biomarcador
 
 
 --
--- Name: registros_biomarcador registros_biomarcador_medico_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: registros_biomarcador registros_biomarcador_medico_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.registros_biomarcador
@@ -1198,7 +1152,7 @@ ALTER TABLE ONLY public.registros_biomarcador
 
 
 --
--- Name: registros_biomarcador registros_biomarcador_paciente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: registros_biomarcador registros_biomarcador_paciente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.registros_biomarcador
@@ -1206,7 +1160,7 @@ ALTER TABLE ONLY public.registros_biomarcador
 
 
 --
--- Name: usuario_rol usuario_rol_rol_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: usuario_rol usuario_rol_rol_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.usuario_rol
@@ -1214,7 +1168,7 @@ ALTER TABLE ONLY public.usuario_rol
 
 
 --
--- Name: usuario_rol usuario_rol_usuario_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: usuario_rol usuario_rol_usuario_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.usuario_rol
