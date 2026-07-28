@@ -8,6 +8,8 @@ export const environment = {
   apiUrl: 'https://spark-backend-sk78.onrender.com/api',
   // Backend simple (sin uso en producción, apunta al mismo servidor)
   apiUrlSimple: 'https://spark-backend-sk78.onrender.com/api',
+  // 🤖 Servicio de IA Flask (modelos de voz Parkinson)
+  mlUrl: 'https://spark-ia.onrender.com',
 
   // 🔥 CONFIG FIREBASE
   firebaseConfig: {
