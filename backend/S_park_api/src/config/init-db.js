@@ -189,9 +189,16 @@ async function initDb() {
 
     const expCheck = await query('SELECT id FROM expedientes WHERE paciente_id = $1', [pacProfileId]);
     if (expCheck.rows.length === 0) {
+      const defaultMed = await query('SELECT id FROM medicos WHERE activo = TRUE ORDER BY id ASC LIMIT 1');
+      const medId = defaultMed.rows.length > 0 ? defaultMed.rows[0].id : null;
       await query(
-        'INSERT INTO expedientes (paciente_id, fecha_apertura, estado, created_at, updated_at) VALUES ($1, CURRENT_DATE, $2, NOW(), NOW())',
-        [pacProfileId, 'ACTIVO']
+        'INSERT INTO expedientes (paciente_id, medico_responsable_id, fecha_apertura, estado, created_at, updated_at) VALUES ($1, $2, CURRENT_DATE, $3, NOW(), NOW())',
+        [pacProfileId, medId, 'ACTIVO']
+      );
+    } else {
+      await query(
+        'UPDATE expedientes SET medico_responsable_id = COALESCE(medico_responsable_id, (SELECT id FROM medicos WHERE activo = TRUE ORDER BY id ASC LIMIT 1)) WHERE paciente_id = $1',
+        [pacProfileId]
       );
     }
     console.log('✅ [DB INIT] Cuentas de acceso de administrador y paciente aseguradas.');

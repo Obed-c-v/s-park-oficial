@@ -44,10 +44,18 @@ const createPaciente = async (pacienteData, medicoResponsableId) => {
     );
     const patientId = patientResult.rows[0].id;
 
-    // 4. Create Expediente
+    // 4. Ensure a doctor is assigned (if not provided, assign first active doctor by default)
+    let finalMedicoId = medicoResponsableId;
+    if (!finalMedicoId) {
+      const defaultMedicoRes = await client.query('SELECT id FROM medicos WHERE activo = TRUE ORDER BY id ASC LIMIT 1');
+      if (defaultMedicoRes.rows.length > 0) {
+        finalMedicoId = defaultMedicoRes.rows[0].id;
+      }
+    }
+
     const expedienteResult = await client.query(
       'INSERT INTO expedientes (paciente_id, medico_responsable_id, fecha_apertura, estado) VALUES ($1, $2, CURRENT_DATE, $3) RETURNING id',
-      [patientId, medicoResponsableId, 'ACTIVO']
+      [patientId, finalMedicoId, 'ACTIVO']
     );
     const expedienteId = expedienteResult.rows[0].id;
 
