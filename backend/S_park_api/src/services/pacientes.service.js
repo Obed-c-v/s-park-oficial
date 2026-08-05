@@ -12,6 +12,12 @@ const createPaciente = async (pacienteData, medicoResponsableId) => {
   try {
     await client.query('BEGIN');
 
+    // 0. Check if user with this email already exists
+    const existingUser = await client.query('SELECT id FROM usuarios WHERE email = $1', [pacienteData.email]);
+    if (existingUser.rows.length > 0) {
+      throw { statusCode: 400, message: 'El correo electrónico ya se encuentra registrado en la plataforma.' };
+    }
+
     // 1. Create User with temporary password and OTP
     const tempPassword = generateTempPassword();
     const hashedPassword = await hashPassword(tempPassword);
