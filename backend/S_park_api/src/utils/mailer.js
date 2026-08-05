@@ -53,8 +53,14 @@ const initTransporter = async () => {
 const sendActivationEmail = async (to, { nombre, tempPassword, otp }) => {
   const mailTransporter = await initTransporter();
 
+  let fromEmail = process.env.SMTP_FROM || 'S-Park <onboarding@resend.dev>';
+  // Si se usa Resend sin dominio propio verificado, el remitente debe ser onboarding@resend.dev
+  if (process.env.SMTP_HOST && process.env.SMTP_HOST.includes('resend') && !fromEmail.includes('resend.dev')) {
+    fromEmail = 'S-Park <onboarding@resend.dev>';
+  }
+
   const mailOptions = {
-    from: process.env.SMTP_FROM || 'S-Park <noreply@spark-salud.com>',
+    from: fromEmail,
     to,
     subject: 'S-Park - Activación de cuenta',
     html: `
