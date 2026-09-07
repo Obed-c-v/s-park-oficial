@@ -178,14 +178,23 @@ async function run() {
       pacProfileId = res.rows[0].id;
     }
 
-    const expCheck = await query('SELECT id FROM expedientes WHERE paciente_id = $1', [pacProfileId]);
+    const expCheck = await query('SELECT id, medico_responsable_id FROM expedientes WHERE paciente_id = $1', [pacProfileId]);
+    let docId = adminUserId;
+    const docRes = await query('SELECT id FROM medicos WHERE activo = TRUE LIMIT 1');
+    if (docRes.rows[0]?.id) docId = docRes.rows[0].id;
+
     if (expCheck.rows.length === 0) {
       await query(
-        'INSERT INTO expedientes (paciente_id, fecha_apertura, estado, created_at, updated_at) VALUES ($1, CURRENT_DATE, $2, NOW(), NOW())',
-        [pacProfileId, 'ACTIVO']
+        'INSERT INTO expedientes (paciente_id, medico_responsable_id, fecha_apertura, estado, created_at, updated_at) VALUES ($1, $2, CURRENT_DATE, $3, NOW(), NOW())',
+        [pacProfileId, docId, 'ACTIVO']
+      );
+    } else if (!expCheck.rows[0].medico_responsable_id) {
+      await query(
+        'UPDATE expedientes SET medico_responsable_id = $1 WHERE paciente_id = $2',
+        [docId, pacProfileId]
       );
     }
-    console.log('✅ Paciente de prueba registrado.');
+    console.log('✅ Paciente de prueba registrado con médico responsable asignado en su expediente.');
 
     console.log('\n========================================================');
     console.log(' 🎉 ¡BASE DE DATOS INICIALIZADA Y RESTAURADA CON ÉXITO! ');

@@ -194,21 +194,11 @@ const createRegistroVoz = async (pacienteId, audioBase64, explicitMedicoId = nul
     }
   }
 
-  if (!medicoId) {
-    // Ruta 3: asignación por defecto al primer médico/admin registrado en el sistema
-    const defaultMedRes = await query(
-      `SELECT u.id FROM usuarios u JOIN roles r ON u.rol_id = r.id WHERE r.nombre IN ('MEDICO', 'ADMIN') ORDER BY u.id ASC LIMIT 1`
-    );
-    if (defaultMedRes.rows[0]?.id) {
-      medicoId = defaultMedRes.rows[0].id;
-    }
-  }
-
-  // Validar que se asignó un médico (medico_id no puede ser nulo en la BD)
+  // Validar estrictamente que el paciente tenga un médico asignado
   if (!medicoId) {
     throw {
       statusCode: 400,
-      message: 'No se puede registrar el biomarcador: El paciente no tiene un médico asignado en su expediente.'
+      message: 'No se puede registrar el biomarcador: El paciente no tiene un médico especialista asignado a su expediente.'
     };
   }
 
