@@ -118,9 +118,13 @@ const getDashboardStats = async (medicoId, rol) => {
 };
 
 const getMlUrl = () => {
-  let url = process.env.ML_API_URL || process.env.FLASK_API_URL || 'https://spark-ia.onrender.com';
+  let url = process.env.ML_API_URL || process.env.FLASK_API_URL || '';
+  // Si la variable viene vacía o apunta a instancias previas de Render, usar siempre la URL oficial activa
+  if (!url || !url.includes('spark-ia.onrender.com')) {
+    url = 'https://spark-ia.onrender.com';
+  }
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    url = url.includes('localhost') ? `http://${url}` : `https://${url}`;
+    url = `https://${url}`;
   }
   if (url.includes('onrender.com') && url.startsWith('http://')) {
     url = url.replace('http://', 'https://');
@@ -129,7 +133,7 @@ const getMlUrl = () => {
 };
 
 const createRegistroVoz = async (pacienteId, audioBase64, explicitMedicoId = null) => {
-  // 1. Enviar audio al microservicio Flask mediante HTTPS seguro
+  // 1. Enviar audio al microservicio Flask mediante HTTPS seguro (https://spark-ia.onrender.com)
   const baseUrl = getMlUrl();
   const flaskUrl = `${baseUrl}/api/predict_audio`;
 
@@ -187,6 +191,16 @@ const createRegistroVoz = async (pacienteId, audioBase64, explicitMedicoId = nul
     );
     if (citaRes.rows[0]?.medico_id) {
       medicoId = citaRes.rows[0].medico_id;
+    }
+  }
+
+  if (!medicoId) {
+    // Ruta 3: asignación por defecto al primer médico/admin registrado en el sistema
+    const defaultMedRes = await query(
+      `SELECT u.id FROM usuarios u JOIN roles r ON u.rol_id = r.id WHERE r.nombre IN ('MEDICO', 'ADMIN') ORDER BY u.id ASC LIMIT 1`
+    );
+    if (defaultMedRes.rows[0]?.id) {
+      medicoId = defaultMedRes.rows[0].id;
     }
   }
 
