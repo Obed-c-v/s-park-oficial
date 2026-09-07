@@ -135,8 +135,21 @@ const createRegistroVoz = async (pacienteId, audioBase64, explicitMedicoId = nul
     });
     data = response.data;
   } catch (flaskErr) {
-    const detail = flaskErr.response?.data?.error || flaskErr.message;
-    throw { statusCode: 502, message: `Error en el microservicio de IA: ${detail}` };
+    // Si Render estaba suspendido por inactividad (429/502 cold-start), reintentar una vez tras despertar
+    if (flaskErr.response?.status === 429 || flaskErr.response?.status === 502 || flaskErr.code === 'ECONNRESET') {
+      try {
+        console.log('⚠️ Render cold-start detectado (429/502). Reintentando en 2.5 segundos...');
+        await new Promise(resolve => setTimeout(resolve, 2500));
+        const retryResponse = await axios.post(flaskUrl, { audio: audioBase64 }, { timeout: 60000 });
+        data = retryResponse.data;
+      } catch (retryErr) {
+        const detail = retryErr.response?.data?.error || retryErr.message;
+        throw { statusCode: 502, message: `Error en el microservicio de IA tras reintento: ${detail}` };
+      }
+    } else {
+      const detail = flaskErr.response?.data?.error || flaskErr.message;
+      throw { statusCode: 502, message: `Error en el microservicio de IA: ${detail}` };
+    }
   }
 
   // Validar que Flask devolvió biomarcadores

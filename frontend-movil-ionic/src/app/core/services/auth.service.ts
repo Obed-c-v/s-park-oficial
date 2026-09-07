@@ -88,6 +88,15 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/citas`, { medico_id: medicoId, fecha_hora: fechaHora });
   }
 
+  cancelCita(citaId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/citas/${citaId}/cancel`, {});
+  }
+
+  updateCita(citaId: number, data: { fecha_hora?: string; medico_id?: number }): Observable<any> {
+    return this.http.put(`${this.apiUrl}/citas/${citaId}`, data);
+  }
+
+
   /**
    * Actualiza el perfil del usuario activo (nombre, apellido, telefono, alergias, recetas).
    * El backend detecta el rol por el JWT y guarda en la tabla correcta.

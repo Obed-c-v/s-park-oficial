@@ -14,15 +14,7 @@ async function run() {
     process.exit(1);
   }
 
-  const sqlContent = fs.readFileSync(sqlPath, 'utf8');
-
   try {
-    // 2. Limpiar y estructurar las sentencias SQL
-    console.log('🔄 Ejecutando estructura s-park-oficial.sql...');
-    // Ejecutar el script SQL completo en bloque
-    await query(sqlContent);
-    console.log('✅ Esquema DDL ejecutado correctamente (Tablas creadas).');
-
     // 3. Sembrar biomarcadores por defecto
     console.log('🌱 Sembrando biomarcadores...');
     const biomarkers = [

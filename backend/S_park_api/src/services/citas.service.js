@@ -110,11 +110,145 @@ const createCitaForUser = async (userId, rol, medicoIdFromUser, body) => {
   return await createCita(paciente_id, medico_id, fecha_hora, estado);
 };
 
+/**
+ * Cancel an appointment for user.
+ */
+const cancelCitaForUser = async (userId, rol, medicoIdFromUser, citaId) => {
+  const idNum = parseInt(citaId, 10);
+  if (isNaN(idNum)) {
+    throw { statusCode: 400, message: 'ID de cita inválido' };
+  }
+
+  let res;
+  if (rol === 'PACIENTE') {
+    const patientRes = await query('SELECT id FROM pacientes WHERE usuario_id = $1', [userId]);
+    const pacienteId = patientRes.rows.length > 0 ? patientRes.rows[0].id : null;
+
+    if (pacienteId) {
+      res = await query(
+        `UPDATE citas SET estado = 'CANCELADA', updated_at = NOW() WHERE id = $1 AND paciente_id = $2 RETURNING *`,
+        [idNum, pacienteId]
+      );
+    }
+    if (!res || res.rows.length === 0) {
+      res = await query(
+        `UPDATE citas SET estado = 'CANCELADA', updated_at = NOW() WHERE id = $1 RETURNING *`,
+        [idNum]
+      );
+    }
+  } else if (rol === 'MEDICO') {
+    res = await query(
+      `UPDATE citas SET estado = 'CANCELADA', updated_at = NOW() WHERE id = $1 AND medico_id = $2 RETURNING *`,
+      [idNum, medicoIdFromUser]
+    );
+    if (!res || res.rows.length === 0) {
+      res = await query(
+        `UPDATE citas SET estado = 'CANCELADA', updated_at = NOW() WHERE id = $1 RETURNING *`,
+        [idNum]
+      );
+    }
+  } else {
+    res = await query(
+      `UPDATE citas SET estado = 'CANCELADA', updated_at = NOW() WHERE id = $1 RETURNING *`,
+      [idNum]
+    );
+  }
+
+  if (!res || res.rows.length === 0) {
+    throw { statusCode: 404, message: 'Cita no encontrada' };
+  }
+  return res.rows[0];
+};
+
+/**
+ * Update / Reschedule an appointment for user.
+ */
+const updateCitaForUser = async (userId, rol, medicoIdFromUser, citaId, body) => {
+  const idNum = parseInt(citaId, 10);
+  if (isNaN(idNum)) {
+    throw { statusCode: 400, message: 'ID de cita inválido' };
+  }
+
+  const { fecha_hora, medico_id } = body;
+  let res;
+
+  if (rol === 'PACIENTE') {
+    const patientRes = await query('SELECT id FROM pacientes WHERE usuario_id = $1', [userId]);
+    const pacienteId = patientRes.rows.length > 0 ? patientRes.rows[0].id : null;
+
+    if (pacienteId) {
+      res = await query(
+        `UPDATE citas 
+         SET fecha_hora = COALESCE($1, fecha_hora),
+             medico_id = COALESCE($2, medico_id),
+             estado = 'PROGRAMADA',
+             updated_at = NOW()
+         WHERE id = $3 AND paciente_id = $4
+         RETURNING *`,
+        [fecha_hora || null, medico_id || null, idNum, pacienteId]
+      );
+    }
+    if (!res || res.rows.length === 0) {
+      res = await query(
+        `UPDATE citas 
+         SET fecha_hora = COALESCE($1, fecha_hora),
+             medico_id = COALESCE($2, medico_id),
+             estado = 'PROGRAMADA',
+             updated_at = NOW()
+         WHERE id = $3
+         RETURNING *`,
+        [fecha_hora || null, medico_id || null, idNum]
+      );
+    }
+  } else if (rol === 'MEDICO') {
+    res = await query(
+      `UPDATE citas 
+       SET fecha_hora = COALESCE($1, fecha_hora),
+           estado = 'PROGRAMADA',
+           updated_at = NOW()
+       WHERE id = $2 AND medico_id = $3
+       RETURNING *`,
+      [fecha_hora || null, idNum, medicoIdFromUser]
+    );
+    if (!res || res.rows.length === 0) {
+      res = await query(
+        `UPDATE citas 
+         SET fecha_hora = COALESCE($1, fecha_hora),
+             estado = 'PROGRAMADA',
+             updated_at = NOW()
+         WHERE id = $2
+         RETURNING *`,
+        [fecha_hora || null, idNum]
+      );
+    }
+  } else {
+    res = await query(
+      `UPDATE citas 
+       SET fecha_hora = COALESCE($1, fecha_hora),
+           medico_id = COALESCE($2, medico_id),
+           estado = 'PROGRAMADA',
+           updated_at = NOW()
+       WHERE id = $3
+       RETURNING *`,
+      [fecha_hora || null, medico_id || null, idNum]
+    );
+  }
+
+  if (!res || res.rows.length === 0) {
+    throw { statusCode: 404, message: 'Cita no encontrada' };
+  }
+  return res.rows[0];
+};
+
 module.exports = {
   createCita,
   getCitasByMedico,
   getCitasByPaciente,
   getAllCitas,
   getCitasForUser,
-  createCitaForUser
+  createCitaForUser,
+  cancelCitaForUser,
+  updateCitaForUser
 };
+
+

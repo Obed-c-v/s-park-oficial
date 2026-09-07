@@ -50,11 +50,11 @@
       </div>
 
       <div class="hero-actions">
-        <button type="button" class="hero-action-btn secondary">
+        <button type="button" class="hero-action-btn secondary" (click)="cancelarProximaCita()">
           <ion-icon name="close-outline"></ion-icon>
           Cancelar
         </button>
-        <button type="button" class="hero-action-btn primary">
+        <button type="button" class="hero-action-btn primary" (click)="reprogramarProximaCita()">
           <ion-icon name="refresh-outline"></ion-icon>
           Reprogramar
         </button>
@@ -130,7 +130,7 @@
             </span>
           </div>
         </div>
-        <button type="button" class="appt-cancel-btn" (click)="cancelAppointment(i)">
+        <button type="button" class="appt-cancel-btn" (click)="abrirOpcionesCita(c)">
           <ion-icon name="ellipsis-vertical"></ion-icon>
         </button>
       </div>
@@ -208,7 +208,7 @@
     <!-- Cabecera del modal -->
     <div class="modal-header">
       <div class="modal-title-area">
-        <h2 class="modal-title">Nueva Cita</h2>
+        <h2 class="modal-title">{{ isEditing ? 'Reprogramar Cita' : 'Nueva Cita' }}</h2>
         <p class="modal-subtitle">Paso {{ currentStep }} de 3</p>
       </div>
       <button type="button" class="modal-close-btn" (click)="closeModal()">
@@ -336,7 +336,7 @@
               [disabled]="!canSave()"
               (click)="saveAppointment()">
         <ion-icon name="checkmark-outline"></ion-icon>
-        Confirmar Cita
+        {{ isEditing ? 'Guardar Cambios' : 'Confirmar Cita' }}
       </button>
     </div>
 

@@ -60,5 +60,8 @@ router.post('/', authenticate, citasController.createCita);
  *         description: No autorizado
  */
 router.get('/', authenticate, citasController.getCitasByMedico);
+router.put('/:id/cancel', authenticate, citasController.cancelCita);
+router.put('/:id', authenticate, citasController.updateCita);
 
 module.exports = router;
+

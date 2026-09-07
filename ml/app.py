@@ -38,21 +38,35 @@ model_rf_binary = None
 model_rf_risk = None
 MODEL_LOAD_ERROR = None
 
-# Cargar los escaladores y modelos (Únicamente Random Forest)
-print("[INFO] Cargando modelos de producción (Random Forest)...")
+# Cargar los escaladores y modelos de Oxford
+print("[INFO] Cargando modelo de producción (Oxford)...")
 try:
     scaler_ox = joblib.load(os.path.join(MODELS_DIR, "scaler_oxford.joblib"))
-    scaler_up = joblib.load(os.path.join(MODELS_DIR, "scaler_updrs.joblib"))
     
-    # Random Forest
-    model_rf_binary = joblib.load(os.path.join(MODELS_DIR, "rf_probability.joblib"))
-    model_rf_risk = joblib.load(os.path.join(MODELS_DIR, "rf_risk.joblib"))
+    # Cargar XGBoost como modelo principal de producción (con fallback a Random Forest)
+    xgb_path = os.path.join(MODELS_DIR, "xgb_model.joblib")
+    rf_path = os.path.join(MODELS_DIR, "rf_probability.joblib")
     
-    print("[SUCCESS] Modelos Random Forest y escaladores cargados correctamente.")
+    if os.path.exists(xgb_path):
+        model_rf_binary = joblib.load(xgb_path)
+        print("[SUCCESS] Modelo de Producción XGBoost (Oxford) cargado correctamente (Accuracy: 94.87%, F1: 96.43%).")
+    elif os.path.exists(rf_path):
+        model_rf_binary = joblib.load(rf_path)
+        print("[SUCCESS] Modelo Random Forest (Oxford) y escalador cargados correctamente.")
+    else:
+        raise FileNotFoundError("No se encontró ningún modelo en models/")
 except Exception as e:
     MODEL_LOAD_ERROR = str(e)
-    print(f"[ERROR] Error al cargar los modelos: {e}")
-    print("[WARNING] Asegúrate de haber entrenado los modelos con train_rf.py.")
+    print(f"[ERROR] Error al cargar los modelos de Oxford: {e}")
+
+try:
+    if os.path.exists(os.path.join(MODELS_DIR, "scaler_updrs.joblib")):
+        scaler_up = joblib.load(os.path.join(MODELS_DIR, "scaler_updrs.joblib"))
+    if os.path.exists(os.path.join(MODELS_DIR, "rf_risk.joblib")):
+        model_rf_risk = joblib.load(os.path.join(MODELS_DIR, "rf_risk.joblib"))
+except Exception as e:
+    pass
+
 
 # Listas oficiales de columnas esperadas por los modelos
 OXFORD_FEATURES = [

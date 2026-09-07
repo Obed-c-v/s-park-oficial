@@ -10,9 +10,10 @@ let poolConfig;
 
 if (process.env.DATABASE_URL) {
   // Production / Render — single connection string with SSL
+  const isRender = process.env.DATABASE_URL.includes('render.com');
   poolConfig = {
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production'
+    ssl: isRender || process.env.NODE_ENV === 'production'
       ? { rejectUnauthorized: false }
       : false,
   };

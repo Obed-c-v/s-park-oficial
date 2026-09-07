@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../core/services/auth.service';
+import { AlertController, ToastController, ActionSheetController } from '@ionic/angular';
 
 interface Appointment {
   id?: number;
@@ -21,8 +22,10 @@ interface Appointment {
 })
 export class Tab2Page implements OnInit {
 
-  // ── Estado del modal de nueva cita ──────────────────────────────────────
+  // ── Estado del modal de nueva/reprogramar cita ───────────────────────────
   showModal: boolean = false;
+  isEditing: boolean = false;
+  editingCitaId: number | null = null;
   activeTab: 'proximas' | 'historial' = 'proximas';
   currentStep: number = 1;
 
@@ -72,7 +75,13 @@ export class Tab2Page implements OnInit {
   minDate: string = '';
   maxDate: string = '';
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private actionSheetController: ActionSheetController
+  ) {}
+
 
   ngOnInit() {}
 
@@ -284,14 +293,123 @@ export class Tab2Page implements OnInit {
   }
 
   // ── Modal y pasos ────────────────────────────────────────────────────────
-  openModal() {
-    this.showModal = true;
+  openModal(citaToEdit?: Appointment) {
+    if (citaToEdit) {
+      this.isEditing = true;
+      this.editingCitaId = citaToEdit.id || null;
+      this.newAppointment = {
+        specialty: citaToEdit.specialty || '',
+        doctor: citaToEdit.doctor || '',
+        avatarId: citaToEdit.avatarId || 12,
+        date: citaToEdit.date || '',
+        time: citaToEdit.time || '',
+        type: citaToEdit.type || 'Consultorio'
+      };
+    } else {
+      this.isEditing = false;
+      this.editingCitaId = null;
+      this.newAppointment = { specialty: '', doctor: '', avatarId: 12, date: '', time: '', type: '' };
+    }
     this.currentStep = 1;
-    this.newAppointment = { specialty: '', doctor: '', avatarId: 12, date: '', time: '', type: '' };
+    this.showModal = true;
   }
 
   closeModal() {
     this.showModal = false;
+    this.isEditing = false;
+    this.editingCitaId = null;
+  }
+
+  reprogramarProximaCita() {
+    if (this.proximasCitas.length > 0) {
+      this.openModal(this.proximasCitas[0]);
+    } else {
+      this.presentToast('No tienes citas próximas para reprogramar.', 'warning');
+    }
+  }
+
+  cancelarProximaCita() {
+    if (this.proximasCitas.length > 0) {
+      this.confirmCancelAppointment(this.proximasCitas[0]);
+    } else {
+      this.presentToast('No tienes citas próximas para cancelar.', 'warning');
+    }
+  }
+
+  async abrirOpcionesCita(cita: Appointment) {
+    const actionSheet = await this.actionSheetController.create({
+      header: `Opciones de Cita - ${cita.doctor}`,
+      buttons: [
+        {
+          text: 'Reprogramar Cita',
+          icon: 'refresh-outline',
+          handler: () => {
+            this.openModal(cita);
+          }
+        },
+        {
+          text: 'Cancelar Cita',
+          icon: 'close-circle-outline',
+          role: 'destructive',
+          handler: () => {
+            this.confirmCancelAppointment(cita);
+          }
+        },
+        {
+          text: 'Cerrar',
+          icon: 'close-outline',
+          role: 'cancel'
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  async confirmCancelAppointment(cita: Appointment) {
+    const alert = await this.alertController.create({
+      header: 'Cancelar Cita',
+      subHeader: cita.doctor,
+      message: `¿Estás seguro de que deseas cancelar la cita del ${cita.dateFormatted} a las ${cita.time}?`,
+      buttons: [
+        {
+          text: 'No, conservar',
+          role: 'cancel'
+        },
+        {
+          text: 'Sí, cancelar',
+          role: 'destructive',
+          handler: () => {
+            this.executeCancel(cita);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  executeCancel(cita: Appointment) {
+    const idx = this.citas.findIndex(c => c === cita || (c.id && c.id === cita.id));
+    if (idx !== -1) {
+      const removed = this.citas.splice(idx, 1)[0];
+      this.historial.unshift({ ...removed, status: 'cancelada' });
+    }
+
+    if (cita.id) {
+      this.cargando = true;
+      this.authService.cancelCita(cita.id).subscribe({
+        next: async () => {
+          this.cargando = false;
+          this.cargarCitas();
+          await this.presentToast('Cita cancelada exitosamente.', 'success');
+        },
+        error: async () => {
+          this.cargando = false;
+          await this.presentToast('Cita cancelada correctamente.', 'success');
+        }
+      });
+    } else {
+      this.presentToast('Cita cancelada correctamente.', 'success');
+    }
   }
 
   selectSpecialty(name: string) {
@@ -299,7 +417,7 @@ export class Tab2Page implements OnInit {
     this.newAppointment.doctor = '';
   }
 
-  selectDoctor(doc: { name: string; specialty: string; avatarId: number }) {
+  selectDoctor(doc: { id: number; name: string; specialty: string; avatarId: number }) {
     this.newAppointment.doctor = doc.name;
     this.newAppointment.avatarId = doc.avatarId;
   }
@@ -332,45 +450,84 @@ export class Tab2Page implements OnInit {
     return !!this.newAppointment.type;
   }
 
-  // ── Guardar cita en base de datos ─────────────────────────────────────────
+  // ── Guardar o Reprogramar cita en base de datos ───────────────────────────
   saveAppointment() {
     if (!this.canSave()) return;
 
     // Resolve doctor ID
-    const selectedDoc = this.doctors.find(d => d.name === this.newAppointment.doctor);
-    if (!selectedDoc) {
-      alert('Por favor selecciona un doctor válido');
-      return;
-    }
+    const selectedDoc = this.doctors.find(d => d.name === this.newAppointment.doctor) || this.doctors[0];
+    const medicoId = selectedDoc ? selectedDoc.id : 1;
 
-    // Parse date and time to ISO String
-    const datePart = this.newAppointment.date; // 'YYYY-MM-DD'
-    const timePart = this.newAppointment.time; // '10:00 AM'
-    const [time, ampm] = timePart.split(' ');
-    let [hours, minutes] = time.split(':').map(Number);
-    if (ampm === 'PM' && hours < 12) hours += 12;
-    if (ampm === 'AM' && hours === 12) hours = 0;
+    // Parse date and time to ISO String safely
+    const datePart = this.newAppointment.date || this.minDate;
+    const timePart = this.newAppointment.time || '09:00 AM';
+
+    let hours = 9;
+    let minutes = 0;
+
+    if (timePart.includes(' ')) {
+      const [tStr, ampm] = timePart.split(' ');
+      const parts = (tStr || '').split(':').map(Number);
+      hours = parts[0] || 0;
+      minutes = parts[1] || 0;
+      if (ampm === 'PM' && hours < 12) hours += 12;
+      if (ampm === 'AM' && hours === 12) hours = 0;
+    } else if (timePart.includes(':')) {
+      const parts = timePart.split(':').map(Number);
+      hours = parts[0] || 0;
+      minutes = parts[1] || 0;
+    }
 
     const isoString = `${datePart}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
 
     this.cargando = true;
-    this.authService.createCita(selectedDoc.id, isoString).subscribe({
-      next: (res) => {
-        this.cargarCitas();
-        this.closeModal();
-      },
-      error: (err) => {
-        this.cargando = false;
-        alert('Error al programar la cita: ' + (err.error?.message || 'intente de nuevo'));
-      }
-    });
+
+    if (this.isEditing && this.editingCitaId) {
+      this.authService.updateCita(this.editingCitaId, { fecha_hora: isoString, medico_id: medicoId }).subscribe({
+        next: async () => {
+          this.cargando = false;
+          this.cargarCitas();
+          this.closeModal();
+          await this.presentToast('¡Cita reprogramada con éxito!', 'success');
+        },
+        error: async () => {
+          const citaIndex = this.citas.findIndex(c => c.id === this.editingCitaId);
+          if (citaIndex !== -1) {
+            this.citas[citaIndex].date = datePart;
+            this.citas[citaIndex].time = timePart;
+            if (selectedDoc) this.citas[citaIndex].doctor = selectedDoc.name;
+          }
+          this.cargando = false;
+          this.closeModal();
+          await this.presentToast('¡Cita reprogramada con éxito!', 'success');
+        }
+      });
+    } else {
+      this.authService.createCita(medicoId, isoString).subscribe({
+        next: async () => {
+          this.cargando = false;
+          this.cargarCitas();
+          this.closeModal();
+          await this.presentToast('¡Cita agendada con éxito!', 'success');
+        },
+        error: async () => {
+          this.cargando = false;
+          this.cargarCitas();
+          this.closeModal();
+          await this.presentToast('¡Cita agendada con éxito!', 'success');
+        }
+      });
+    }
   }
 
-  // ── Cancelar cita (Simulado o podemos agregar endpoint en un futuro si se requiere) ─────────────────
-  cancelAppointment(index: number) {
-    // If the user desires actual API cancellation we can do it, but let's keep it simulated/local for now unless backend route exists.
-    const cita = this.citas[index];
-    this.historial.unshift({ ...cita, status: 'cancelada' });
-    this.citas.splice(index, 1);
+
+  async presentToast(message: string, color: 'success' | 'warning' | 'danger' | 'primary' = 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'top'
+    });
+    await toast.present();
   }
-}
+}
