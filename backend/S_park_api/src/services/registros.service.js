@@ -117,15 +117,20 @@ const getDashboardStats = async (medicoId, rol) => {
   return stats;
 };
 
+const getMlUrl = () => {
+  let url = process.env.ML_API_URL || process.env.FLASK_API_URL || 'https://spark-ia.onrender.com';
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = url.includes('localhost') ? `http://${url}` : `https://${url}`;
+  }
+  if (url.includes('onrender.com') && url.startsWith('http://')) {
+    url = url.replace('http://', 'https://');
+  }
+  return url.replace(/\/+$/, '');
+};
+
 const createRegistroVoz = async (pacienteId, audioBase64, explicitMedicoId = null) => {
-  // 1. Enviar audio al microservicio Flask
-  let baseUrl = process.env.ML_API_URL || process.env.FLASK_API_URL || 'http://localhost:5000';
-  if (baseUrl && !baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
-    baseUrl = `http://${baseUrl}`;
-  }
-  if (baseUrl && (baseUrl.includes('http://spark-ia') || baseUrl.includes('http://spark-ia-sk78') || baseUrl.includes('http://spark-ia-8zi1')) && !baseUrl.includes('.onrender.com')) {
-    baseUrl = 'https://spark-ia.onrender.com';
-  }
+  // 1. Enviar audio al microservicio Flask mediante HTTPS seguro
+  const baseUrl = getMlUrl();
   const flaskUrl = `${baseUrl}/api/predict_audio`;
 
   let data;
@@ -224,13 +229,7 @@ const createRegistroVoz = async (pacienteId, audioBase64, explicitMedicoId = nul
 };
 
 const probarModelos = async (features) => {
-  let baseUrl = process.env.ML_API_URL || process.env.FLASK_API_URL || 'http://localhost:5000';
-  if (baseUrl && !baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
-    baseUrl = `http://${baseUrl}`;
-  }
-  if (baseUrl && (baseUrl.includes('http://spark-ia') || baseUrl.includes('http://spark-ia-sk78') || baseUrl.includes('http://spark-ia-8zi1')) && !baseUrl.includes('.onrender.com')) {
-    baseUrl = 'https://spark-ia.onrender.com';
-  }
+  const baseUrl = getMlUrl();
   const response = await axios.post(`${baseUrl}/api/predict`, features, { timeout: 60000 });
   return response.data;
 };
