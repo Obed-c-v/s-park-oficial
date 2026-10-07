@@ -379,12 +379,12 @@ S-PARK-/
 
 | Artefacto | Descripción | Ubicación |
 |---|---|---|
-| **APK Android** | App móvil compilada para Android | `frontend-movil-ionic/android/app/build/outputs/apk/debug/` |
-| **Build Web** | Archivos estáticos del panel web | `frontend/dist/S-park/browser/` |
-| **SQL Dump** | Esquema y datos de la base de datos | `s-park-oficial.sql` |
-| **Modelos ML** | Modelos entrenados en formato joblib | `ml/models/` |
+| **APK Android (Ejecutable)** | Paquete de instalación para Android 8.0+ | [Descargar S-Park-v1.0.0.apk](https://github.com/Obed-c-v/S-PARK-/releases/download/v1.0.0/S-Park-v1.0.0.apk) · [Ver Release Oficial v1.0.0](https://github.com/Obed-c-v/S-PARK-/releases/tag/v1.0.0) |
+| **Build Web** | Archivos estáticos del panel web | Generado con `ng build` (`dist/S-park/browser/`) |
+| **SQL Dump** | Esquema y datos de la base de datos | [`s-park-oficial.sql`](./s-park-oficial.sql) |
+| **Modelos ML** | Modelos entrenados en formato joblib | [`ml/models/`](./ml/models/) |
 
-> El APK y el build web se generan localmente con los comandos descritos en la sección de instalación. No se incluyen binarios precompilados en el repositorio para mantener el historial de versiones limpio.
+> 📱 El ejecutable APK para Android está publicado formalmente en la sección de **[Releases](https://github.com/Obed-c-v/S-PARK-/releases)** del repositorio para su descarga e instalación inmediata sin requerir compilación local.
 
 ---
 
