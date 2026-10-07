@@ -17,6 +17,7 @@ logs.txt
 
 # Tokens
 last-token.txt
+*.txt
 
 # Uploads
 uploads/avatars/
@@ -29,3 +30,52 @@ Thumbs.db
 venv/
 __pycache__/
 *.pyc
+*.pyo
+
+# Documentos de proyecto (no son código fuente)
+*.md
+!README.md
+
+# Archivos de diagnóstico / debug raíz
+check_columns.js
+check_db_full.js
+tmp_check_db.js
+pr.json
+s_parks
+implementation_planmch
+
+# Archivos de diagnóstico dentro del backend
+backend/S_park_api/check-schema.js
+backend/S_park_api/check-user-role.js
+backend/S_park_api/check_db_full.js
+backend/S_park_api/check_local_vs_render.js
+backend/S_park_api/create-admin-test.js
+backend/S_park_api/create-admin.js
+backend/S_park_api/create-custom-admin.js
+backend/S_park_api/create-paciente.js
+backend/S_park_api/db_migration.js
+backend/S_park_api/find-user.js
+backend/S_park_api/get-token.js
+backend/S_park_api/write-token.js
+backend/S_park_api/print_tables.js
+backend/S_park_api/restore-db.js
+backend/S_park_api/test_predict.js
+backend/S_park_api/schema-output.txt
+backend/S_park_api/last-token.txt
+
+# Outputs ML generados (no son código fuente)
+ml/outputs/
+ml/guia_estudio_ml.md
+ml/guia_estudio_modelos.txt
+ml/justificacion_modelos_y_riesgos.txt
+ml/umbrales_riesgo.txt
+
+# Archivos de generación de imágenes/reportes (utilitarios, no producción)
+ml/generate_confusion_matrices.py
+ml/generate_evaluation_report.py
+ml/generate_synthetic_oxford.py
+ml/generate_table_img.py
+ml/generate_updated_oxford_charts.py
+ml/explore_data.py
+ml/experiment_splits.py
+ml/compare_models.py
