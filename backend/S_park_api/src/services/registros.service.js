@@ -144,16 +144,25 @@ const createRegistroVoz = async (pacienteId, audioBase64, explicitMedicoId = nul
     });
     data = response.data;
   } catch (flaskErr) {
-    // Si Render estaba suspendido por inactividad (429/502 cold-start), reintentar una vez tras despertar
-    if (flaskErr.response?.status === 429 || flaskErr.response?.status === 502 || flaskErr.code === 'ECONNRESET') {
+    // Si Render estaba suspendido por inactividad (cold-start / 429 / 502 / 504 / timeout), reintentar tras despertar
+    if (
+      flaskErr.response?.status === 429 || 
+      flaskErr.response?.status === 502 || 
+      flaskErr.response?.status === 504 || 
+      flaskErr.code === 'ECONNRESET' || 
+      flaskErr.code === 'ECONNABORTED' || 
+      flaskErr.message?.includes('timeout')
+    ) {
       try {
-        console.log('⚠️ Render cold-start detectado (429/502). Reintentando en 2.5 segundos...');
-        await new Promise(resolve => setTimeout(resolve, 2500));
+        console.log('⚠️ Render cold-start o timeout detectado. Reintentando en 3 segundos...');
+        await new Promise(resolve => setTimeout(resolve, 3000));
         const retryResponse = await axios.post(flaskUrl, { audio: audioBase64 }, { timeout: 60000 });
         data = retryResponse.data;
       } catch (retryErr) {
-        const detail = retryErr.response?.data?.error || retryErr.message;
-        throw { statusCode: 502, message: `Error en el microservicio de IA tras reintento: ${detail}` };
+        throw { 
+          statusCode: 502, 
+          message: 'El servicio de IA en Render se encuentra despertando de inactividad (cold-start). Por favor, repita la prueba en unos segundos.' 
+        };
       }
     } else {
       const detail = flaskErr.response?.data?.error || flaskErr.message;
@@ -194,11 +203,26 @@ const createRegistroVoz = async (pacienteId, audioBase64, explicitMedicoId = nul
     }
   }
 
-  // Validar estrictamente que el paciente tenga un médico asignado
+  // Ruta 3: Fallback automático - Asignar primer médico especialista activo
+  if (!medicoId) {
+    const defaultMedRes = await query('SELECT id FROM medicos WHERE activo = TRUE ORDER BY id ASC LIMIT 1');
+    if (defaultMedRes.rows.length > 0) {
+      medicoId = defaultMedRes.rows[0].id;
+      // Vincular formalmente en el expediente del paciente para que quede asignado de forma permanente
+      await query(
+        `UPDATE expedientes 
+         SET medico_responsable_id = $1 
+         WHERE paciente_id = $2 AND (medico_responsable_id IS NULL OR medico_responsable_id = 0)`,
+        [medicoId, pacienteId]
+      );
+    }
+  }
+
+  // Validación de seguridad final (por si no hubiese médicos en la base de datos)
   if (!medicoId) {
     throw {
       statusCode: 400,
-      message: 'No se puede registrar el biomarcador: El paciente no tiene un médico especialista asignado a su expediente.'
+      message: 'No se puede registrar el biomarcador: No se encontró ningún médico especialista activo en el sistema.'
     };
   }
 
