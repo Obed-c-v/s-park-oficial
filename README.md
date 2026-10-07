@@ -291,9 +291,10 @@ El proyecto incluye un archivo `render.yaml` para despliegue automatizado en [Re
 #   - spark-db         → Base de datos PostgreSQL 16
 ```
 
-**URLs de Producción actuales:**
-- 🌐 **API Gateway:** `https://spark-backend-sk78.onrender.com`
-- 🧠 **Microservicio IA:** `https://spark-ia.onrender.com`
+**URLs de Producción oficiales:**
+- 💻 **Panel Web Clínico (Frontend):** [https://spark-frontend-rigv.onrender.com](https://spark-frontend-rigv.onrender.com)
+- 🌐 **API Gateway (Backend REST):** [https://spark-backend-sk78.onrender.com](https://spark-backend-sk78.onrender.com)
+- 🧠 **Microservicio IA (Flask):** [https://spark-ia.onrender.com](https://spark-ia.onrender.com)
 
 > **Nota:** En el plan gratuito de Render, los servicios web entran en estado de "sleep" tras inactividad. El primer request puede tardar ~30–60 segundos (cold start). El cliente ya tiene configurado un timeout de 60 segundos para mitigar esto.
 
