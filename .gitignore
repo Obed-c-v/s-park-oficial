@@ -18,9 +18,11 @@ logs.txt
 # Tokens
 last-token.txt
 *.txt
+!ml/requirements.txt
 
 # Uploads
-uploads/avatars/
+uploads/
+**/uploads/
 
 # OS
 .DS_Store
@@ -34,7 +36,7 @@ __pycache__/
 
 # Documentos de proyecto (no son código fuente)
 *.md
-!README.md
+!/README.md
 
 # Archivos de diagnóstico / debug raíz
 check_columns.js

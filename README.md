@@ -350,11 +350,7 @@ S-PARK-/
 │
 ├── s-park-oficial.sql          # Backup completo de la base de datos
 ├── render.yaml                 # Configuración de despliegue en Render
-├── notas_de_la_version_spark.md     # Release notes detalladas
-├── manual_de_usuario_spark.md       # Manual de usuario
-├── plan_de_pruebas_spark.md         # Plan de pruebas
-├── diagramas_uml_spark.md           # Diagramas UML del sistema
-└── README.md                        # Este archivo
+└── README.md                   # Documentación técnica del proyecto
 ```
 
 ---
@@ -376,8 +372,6 @@ S-PARK-/
 - Normalización de formatos de audio WebM/WAV para compatibilidad con Librosa
 - Optimización de connection pooling en PostgreSQL 16
 - Validación estricta de asignación obligatoria de médico responsable
-
-Consulta [`notas_de_la_version_spark.md`](./notas_de_la_version_spark.md) para el historial completo de cambios.
 
 ---
 
