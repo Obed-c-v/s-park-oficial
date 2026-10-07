@@ -119,12 +119,16 @@ const getDashboardStats = async (medicoId, rol) => {
 
 const getMlUrl = () => {
   let url = process.env.ML_API_URL || process.env.FLASK_API_URL || '';
-  // Si la variable viene vacía o apunta a instancias previas de Render, usar siempre la URL oficial activa
-  if (!url || !url.includes('spark-ia.onrender.com')) {
+  if (!url) {
     url = 'https://spark-ia.onrender.com';
   }
+  // Si viene solo el host (ej: spark-ia-xxxx.onrender.com o spark-ia)
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    url = `https://${url}`;
+    if (url.includes('.')) {
+      url = `https://${url}`;
+    } else {
+      url = `http://${url}:10000`;
+    }
   }
   if (url.includes('onrender.com') && url.startsWith('http://')) {
     url = url.replace('http://', 'https://');
@@ -133,9 +137,10 @@ const getMlUrl = () => {
 };
 
 const createRegistroVoz = async (pacienteId, audioBase64, explicitMedicoId = null) => {
-  // 1. Enviar audio al microservicio Flask mediante HTTPS seguro (https://spark-ia.onrender.com)
+  // 1. Enviar audio al microservicio Flask
   const baseUrl = getMlUrl();
   const flaskUrl = `${baseUrl}/api/predict_audio`;
+  console.log(`🤖 [ML IA] Llamando a microservicio de IA en: ${flaskUrl}`);
 
   let data;
   try {
