@@ -25,15 +25,9 @@ services:
           name: spark-db
           property: connectionString
       - key: ML_API_URL
-        fromService:
-          type: web
-          name: spark-ia
-          property: host
+        value: https://spark-ia.onrender.com
       - key: FLASK_API_URL
-        fromService:
-          type: web
-          name: spark-ia
-          property: host
+        value: https://spark-ia.onrender.com
       - key: JWT_SECRET
         generateValue: true
 

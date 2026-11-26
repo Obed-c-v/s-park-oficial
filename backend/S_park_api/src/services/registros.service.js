@@ -119,16 +119,12 @@ const getDashboardStats = async (medicoId, rol) => {
 
 const getMlUrl = () => {
   let url = process.env.ML_API_URL || process.env.FLASK_API_URL || '';
-  if (!url) {
+  // Si no está definido, o si viene el nombre interno 'spark-ia' sin dominio resoluble
+  if (!url || url === 'spark-ia' || !url.includes('.')) {
     url = 'https://spark-ia.onrender.com';
   }
-  // Si viene solo el host (ej: spark-ia-xxxx.onrender.com o spark-ia)
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    if (url.includes('.')) {
-      url = `https://${url}`;
-    } else {
-      url = `http://${url}:10000`;
-    }
+    url = `https://${url}`;
   }
   if (url.includes('onrender.com') && url.startsWith('http://')) {
     url = url.replace('http://', 'https://');
