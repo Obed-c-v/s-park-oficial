@@ -3,6 +3,59 @@ const fs = require('fs');
 const path = require('path');
 const { hashPassword } = require('../utils/hash');
 
+function convertCopyCommandsToInserts(sql) {
+  if (!sql.includes('COPY ')) {
+    return sql;
+  }
+  const lines = sql.split('\n');
+  const result = [];
+  let copyTarget = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (trimmed.includes("set_config('search_path', '', false)")) {
+      result.push('SET search_path = public;');
+      continue;
+    }
+
+    if (line.startsWith('COPY ')) {
+      copyTarget = line.replace('COPY ', '').replace(' FROM stdin;', '').trim();
+      continue;
+    }
+
+    if (trimmed === '\\.') {
+      copyTarget = null;
+      continue;
+    }
+
+    if (copyTarget) {
+      if (trimmed === '') continue;
+      const rawCols = line.replace(/\r$/, '').split('\t');
+      const formattedCols = rawCols.map(col => {
+        if (col === '\\N') {
+          return 'NULL';
+        }
+        let unescaped = col
+          .replace(/\\\\/g, '\\')
+          .replace(/\\n/g, '\n')
+          .replace(/\\r/g, '\r')
+          .replace(/\\t/g, '\t');
+        let sqlLiteral = unescaped.replace(/'/g, "''");
+        return `'${sqlLiteral}'`;
+      });
+      result.push(`INSERT INTO ${copyTarget} VALUES (${formattedCols.join(', ')});`);
+    } else {
+      result.push(line);
+    }
+  }
+
+  result.push('');
+  result.push('SET search_path = public;');
+  return result.join('\n');
+}
+
 async function initDb() {
   console.log('🔍 [DB INIT] Comprobando integridad de la base de datos...');
   try {
@@ -27,7 +80,8 @@ async function initDb() {
       return;
     }
 
-    const sqlContent = fs.readFileSync(sqlPath, 'utf8');
+    let sqlContent = fs.readFileSync(sqlPath, 'utf8');
+    sqlContent = convertCopyCommandsToInserts(sqlContent);
     
     // Ejecutar la restauración DDL
     await query(sqlContent);
